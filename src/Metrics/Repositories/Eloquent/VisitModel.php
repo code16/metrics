@@ -35,4 +35,13 @@ class VisitModel extends Model
         'date',
     ];
 
+    /**
+     * Get the current connection name for the model.
+     *
+     * @return string
+     */
+    public function getConnectionName()
+    {   
+        return config('metrics.connection');
+    }
 }

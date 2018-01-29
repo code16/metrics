@@ -26,7 +26,7 @@ class MetricModel extends Model
      * @return string
      */
     public function getConnectionName()
-    {
+    {   
         return config('metrics.connection');
     }
 }
