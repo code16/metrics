@@ -12,7 +12,7 @@ class CreateVisitsTables extends Migration
      */
     public function up()
     {
-        Schema::create('metric_visits', function(Blueprint $table) {
+        Schema::connection($this->getConnection())->create('metric_visits', function(Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('ip');
             $table->string('url');

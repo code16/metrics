@@ -12,7 +12,7 @@ class CreateMetricsTable extends Migration
      */
     public function up()
     {
-        Schema::create('metric_metrics', function(Blueprint $table) {
+        Schema::connection($this->getConnection())->create('metric_metrics', function(Blueprint $table) {
             $table->increments('id');
             $table->integer('type')->unsigned();
             $table->datetime('start');

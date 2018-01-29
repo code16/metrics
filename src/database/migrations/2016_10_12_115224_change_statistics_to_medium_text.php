@@ -12,7 +12,7 @@ class ChangeStatisticsToMediumText extends Migration
      */
     public function up()
     {
-        Schema::table('metric_metrics', function(Blueprint $table) {
+        Schema::connection($this->getConnection())->table('metric_metrics', function(Blueprint $table) {
             $table->string('statistics', 16777215)->change();
         });
     }

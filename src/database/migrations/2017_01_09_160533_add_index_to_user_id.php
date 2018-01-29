@@ -12,7 +12,7 @@ class AddIndexToUserId extends Migration
      */
     public function up()
     {
-        Schema::table('metric_visits', function(Blueprint $table) {
+        Schema::connection($this->getConnection())->table('metric_visits', function(Blueprint $table) {
             $table->index('user_id');
         });
     }

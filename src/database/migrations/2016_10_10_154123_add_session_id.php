@@ -12,7 +12,7 @@ class AddSessionId extends Migration
      */
     public function up()
     {
-        Schema::table('metric_visits', function(Blueprint $table) {
+        Schema::connection($this->getConnection())->table('metric_visits', function(Blueprint $table) {
             $table->string('session_id')->nullable();
         });
     }
