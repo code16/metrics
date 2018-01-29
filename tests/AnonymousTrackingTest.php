@@ -2,6 +2,7 @@
 
 namespace Code16\Metrics\Tests;
 
+use Mockery;
 use Code16\Metrics\Tests\Stubs\AcmeAction;
 use Code16\Metrics\Tests\Stubs\AcmeProvider;
 use Code16\Metrics\Manager;

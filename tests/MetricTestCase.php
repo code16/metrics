@@ -2,6 +2,7 @@
 
 namespace Code16\Metrics\Tests;
 
+use Code16\Metrics\Tests\Stubs\User;
 use Carbon\Carbon;
 use Faker\Factory;
 use Code16\Metrics\Metric;
@@ -19,6 +20,7 @@ use Illuminate\Support\Collection;
 use Code16\Metrics\Repositories\Eloquent\VisitModel;
 use Code16\Metrics\Contracts\AnalyzerInterface;
 use Code16\Metrics\Compiler;
+use Illuminate\Support\Facades\Auth;
 
 abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
 {
@@ -29,10 +31,9 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
         $this->faker = Factory::create();
         
         parent::setUp();
-        
+
         $this->loadLaravelMigrations(['--database' => 'sqlite']);
-        
-        
+        $this->artisan('migrate');
     }
 
     /**
@@ -49,6 +50,7 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite.database', ':memory:');
         $app['config']->set('metrics.logging', true);
+        $app['config']->set('auth.providers.users.model', User::class);
         //$this->migrateDatabase();
         //$this->artisan('migrate', ['--force' => 'default']);
         //$this->app[Kernel::class]->setArtisan(null);
@@ -71,7 +73,7 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
     protected function addLoginRoute($app)
     {
         $router = $app->make('router');
-        $router->post('auth', function(Illuminate\Http\Request $request) {
+        $router->post('auth', function(\Illuminate\Http\Request $request) {
             $result = Auth::attempt([
                 'email' => $request->email,
                 'password' => $request->password,
@@ -206,7 +208,7 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
      */
     protected function createTestUser()
     {
-        $user = new App\User;
+        $user = new User;
         $user->name = 'marty mc fly';
         $user->email = 'test@example.net';
         $user->password = bcrypt('test');

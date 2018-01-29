@@ -2,6 +2,7 @@
 
 namespace Code16\Metrics\Tests;
 
+use Mockery;
 use Code16\Metrics\Tests\Stubs\AcmeAction;
 use Code16\Metrics\Tests\Stubs\AcmeProvider;
 use Code16\Metrics\Manager;
@@ -152,6 +153,7 @@ class TrackingTest extends MetricTestCase
     {   
         $user = $this->createTestUser();
         $timeMachine = Mockery::mock(TimeMachine::class);
+        $timeMachine->shouldReceive('updatePreviousSessions')->andReturn(true);
         $timeMachine->shouldReceive('setCurrentVisit');
         $timeMachine->shouldReceive('lookup')->once()->with($user->id);
         $this->app->bind(TimeMachine::class, function ($app) use ($timeMachine) {
@@ -164,6 +166,7 @@ class TrackingTest extends MetricTestCase
         ];
         //$this->expectsEvents(Login::class);
         $result = $this->post('auth', $data);
+        $result->assertStatus(200);
     }
 
     /** @test */

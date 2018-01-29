@@ -168,7 +168,7 @@ class UpdaterTest extends MetricTestCase
         $end = Carbon::create(2016,1,1,23,59,59);
         $this->createVisitsByDate(50, $start, $end);
         $this->updater->update();
-        $metrics = $this->app->make(Code16\Metrics\Repositories\MetricRepository::class);
+        $metrics = $this->app->make(MetricRepository::class);
         $period = new TimeInterval($start, $end, Metric::DAILY);
         $metric = $metrics->find($period);
         $this->assertEquals(50, $metric->getCount());
@@ -184,7 +184,7 @@ class UpdaterTest extends MetricTestCase
         $start = Carbon::create(2016,1,1,0,0,0);
         $end = Carbon::create(2016,1,1,23,59,59);
         $period = new TimeInterval($start, $end, Metric::DAILY);
-        $metrics = $this->app->make(Code16\Metrics\Repositories\MetricRepository::class);
+        $metrics = $this->app->make(MetricRepository::class);
         $metric = $metrics->find($period);
         $this->assertNull($metric);
     }
@@ -199,7 +199,7 @@ class UpdaterTest extends MetricTestCase
         $start = Carbon::create(2016,1,1,0,0,0);
         $end = Carbon::create(2016,12,31,23,59,59);
         $period = new TimeInterval($start, $end, Metric::YEARLY);
-        $metrics = $this->app->make(Code16\Metrics\Repositories\MetricRepository::class);
+        $metrics = $this->app->make(MetricRepository::class);
         $metric = $metrics->find($period);
         $this->assertNotNull($metric);
     }
