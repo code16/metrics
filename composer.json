@@ -39,6 +39,13 @@
             "Code16\\Metrics\\Tests\\": "tests/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Code16\\Metrics\\MetricServiceProvider"
+            ]
+        }
+    },
     "license": "MIT"
     
 }
