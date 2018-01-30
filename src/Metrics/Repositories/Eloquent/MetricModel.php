@@ -2,14 +2,8 @@
 
 namespace Code16\Metrics\Repositories\Eloquent;
 
-use Illuminate\Database\Eloquent\Model;
-
-class MetricModel extends Model
+class MetricModel extends BaseModel
 {
-    use PreserveDateAsCarbonTrait;
-    
-    public $timestamps = false;
-
     protected $dates = ['start', 'end'];
 
     protected $table='metric_metrics';
@@ -19,14 +13,4 @@ class MetricModel extends Model
     protected $casts = [
         'statistics' => 'array',
     ];
-    
-    /**
-     * Get the current connection name for the model.
-     *
-     * @return string
-     */
-    public function getConnectionName()
-    {   
-        return config('metrics.connection');
-    }
 }

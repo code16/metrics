@@ -2,14 +2,8 @@
 
 namespace Code16\Metrics\Repositories\Eloquent;
 
-use Illuminate\Database\Eloquent\Model;
-
-class VisitModel extends Model
+class VisitModel extends BaseModel
 {
-    use PreserveDateAsCarbonTrait;
-    
-    public $timestamps = false;
-
     protected $table='metric_visits';
     
     protected $fillable = [
@@ -35,13 +29,4 @@ class VisitModel extends Model
         'date',
     ];
 
-    /**
-     * Get the current connection name for the model.
-     *
-     * @return string
-     */
-    public function getConnectionName()
-    {   
-        return config('metrics.connection');
-    }
 }
