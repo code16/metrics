@@ -47,6 +47,7 @@ class MetricMiddleware
         // Handle the 'Do Not Track' header
         if($request->server('HTTP_DNT')) {
             $this->metricManager->setTrackingOff();
+            return $next($request);
         }
 
         // In the other case, we'll only track the visit
