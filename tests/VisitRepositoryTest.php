@@ -64,9 +64,9 @@ class VisitRepositoryTest extends MetricTestCase
     public function we_can_query_for_last_visit()
     {
         $this->createVisits(23, '-1 hour');
-        $this->createVisits(1, '-1 hour', ['date' => Carbon::now()->addDay()->endOfDay()]);
+        $this->createVisits(1, '-1 hour', ['date' => Carbon::now()->addDay()->endOfDay()->startOfMinute()]);
         $visit = $this->repository->last();
-        $this->assertEquals(Carbon::now()->addDay()->endOfDay(), $visit->getDate());
+        $this->assertEquals(Carbon::now()->addDay()->endOfDay()->startOfMinute(), $visit->getDate());
     }
 
     /** @test */
