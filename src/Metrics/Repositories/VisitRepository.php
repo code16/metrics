@@ -31,4 +31,6 @@ interface VisitRepository {
     public function oldestVisitForCookie($cookie);
 
     public function countByTimeInterval(TimeInterval $interval);
+
+    public function anonymizeUntil(Carbon $until);
 }

@@ -78,4 +78,26 @@ class VisitRepositoryTest extends MetricTestCase
         $visit = $this->repository->oldestVisitForCookie($cookie);
         $this->assertInstanceOf(Visit::class, $visit);
     }
+
+    /** @test */
+    public function we_can_anonymize_old_visits()
+    {
+        $this->createVisits(100, '-1 day', ['user_id' => 23]);
+        $this->repository->anonymizeUntil(Carbon::now());
+        $this->assertCount(0, $this->repository->visitsFromUser(23));
+    }
+
+    /** @test */
+    public function newer_visits_do_not_get_anonymized()
+    {
+        $this->createVisits(2, '-1 day', [
+            'user_id' => 23,
+        ]);
+        $this->createVisits(3, '-1000 years', [
+            'user_id' => 23,
+        ]);
+    
+        $this->repository->anonymizeUntil(Carbon::now()->subDays(1));
+        $this->assertCount(2, $this->repository->visitsFromUser(23));
+    }
 }
