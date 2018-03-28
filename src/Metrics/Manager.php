@@ -68,6 +68,11 @@ class Manager
      */
     protected $requestHasCookie = false;
 
+    /**
+     * @var boolean
+     */
+    protected $hasPlaceDntCookie = false;
+
     public function __construct(Application $app)
     {
         $this->app = $app;
@@ -431,4 +436,24 @@ class Manager
         $this->filters[] = $filter;
     }
 
+    /**
+     * Return true if we need to place a do_not_track cookie at the
+     * end of the request
+     * 
+     * @return boolean
+     */
+    public function hasPlaceDntCookie()
+    {
+        return $this->placeDntCookie;
+    }
+
+    /**
+     * Call this to place a Do_not_track cookie 
+     * 
+     * @return void
+     */
+    public function placeDntCookie() 
+    {
+        $this->placeDntCookie = true;
+    }
 }

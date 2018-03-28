@@ -44,13 +44,13 @@ class MetricMiddleware
         // Then we implent some logic to tell if the request has
         // to be tracked or not
         
-        // Handle the 'Do Not Track' header
-        if($request->server('HTTP_DNT')) {
+        // Handle the 'Do Not Track' header && cookies
+        if($request->server('HTTP_DNT') || $request->hasCookie(config('metrics.do_not_track_cookie_name'))) {
             $this->metricManager->setTrackingOff();
             return $next($request);
         }
 
-        // In the other case, we'll only track the visit
+        // In the other cases, we'll only track the visit
         // if a Metric cookie already exist in the request
         if ($request->hasCookie(config('metrics.cookie_name'))) {
             $this->metricManager->setRequestCookie(true);

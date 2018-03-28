@@ -39,6 +39,7 @@ class SetCookieMiddleware
 
         $cookieName = config('metrics.cookie_name');
         $anonCookieName = config('metrics.anonymous_cookie_name');
+        $dntCookieName = config('metrics.do_not_track_cookie_name');
 
         if($this->metricManager->isRequestTracked())
         {
@@ -73,6 +74,9 @@ class SetCookieMiddleware
             }
             if($request->hasCookie($anonCookieName)) {
                 $response->headers->setCookie(cookie()->forget($anonCookieName));
+            }
+            if($this->metricManager->hasPlaceDntCookie()) {
+                $response->headers->setCookie(cookie()->make($dntCookieName, true, $this->getLifetime()));
             }
         }
 

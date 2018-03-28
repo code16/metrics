@@ -68,6 +68,17 @@ return [
     */
     'anonymous_cookie_name' => 'metrics_anonymous_tracker',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Do Not Track Cookie Name
+    |--------------------------------------------------------------------------
+    |
+    | This cookie allow a user to opt-out tracking, in a similar fashion that
+    | if he had 'HTTP_DNT' enabled in his browser. 
+    |
+    */
+    'do_not_track_cookie_name'=> 'metrics_do_not_track', 
+
    /*
     |--------------------------------------------------------------------------
     | Cookie Lifetime
