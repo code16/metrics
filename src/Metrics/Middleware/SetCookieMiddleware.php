@@ -93,20 +93,11 @@ class SetCookieMiddleware
 
     protected function doNotTrack($response)
     {
-        $cookieName = config('metrics.cookie_name');
-        $anonCookieName = config('metrics.anonymous_cookie_name');
-        $dntCookieName = config('metrics.do_not_track_cookie_name');
-
-        if(request()->hasCookie($cookieName)) {
-            $response->headers->setCookie(cookie()->forget($cookieName));
-        }
-
-        if(request()->hasCookie($anonCookieName)) {
-            $response->headers->setCookie(cookie()->forget($anonCookieName));
-        }
+        $response->headers->setCookie(cookie()->forget(config('metrics.cookie_name')));
+        $response->headers->setCookie(cookie()->forget(config('metrics.anonymous_cookie_name')));
 
         if($this->metricManager->hasPlaceDntCookie()) {
-            $response->headers->setCookie(cookie()->make($dntCookieName, true, $this->getLifetime()));
+            $response->headers->setCookie(cookie()->make(config('metrics.do_not_track_cookie_name'), true, $this->getLifetime()));
         }
     }
 }
