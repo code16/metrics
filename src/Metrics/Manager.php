@@ -10,10 +10,10 @@ use Code16\Metrics\Repositories\MetricRepository;
 use Code16\Metrics\Repositories\VisitRepository;
 
 class Manager
-{   
+{
     /**
      * Application instance
-     * 
+     *
      * @var Application
      */
     protected $app;
@@ -93,7 +93,7 @@ class Manager
     public function getUpdater()
     {
         return new Updater(
-            $this->app->make(MetricRepository::class), 
+            $this->app->make(MetricRepository::class),
             $this->app->make(VisitRepository::class),
             $this->instantiateProcessors($this->getAnalyzersFromConfig()),
             $this->instantiateProcessors($this->getConsolidersFromConfig())
@@ -101,8 +101,8 @@ class Manager
     }
 
     /**
-     * Set the tracking object 
-     * 
+     * Set the tracking object
+     *
      * @param  Visit  $visit [description]
      * @return Manager
      */
@@ -112,7 +112,7 @@ class Manager
             //throw new TrackingException('Tracking object $visit cannot be set twice');
             return $this;
         }
-        
+
         $this->visit = $visit;
 
         foreach($this->pendingActions as $action) {
@@ -124,7 +124,7 @@ class Manager
 
     /**
      * Access the current visit
-     * 
+     *
      * @return Visit
      */
     public function visit()
@@ -134,14 +134,14 @@ class Manager
 
     /**
      * Attach an action to the current visit
-     * 
+     *
      * @param  Action $action
      * @return void
      */
     public function action(Action $action)
     {
         if($this->visit != null) {
-            $this->visit->addAction($action);    
+            $this->visit->addAction($action);
         }
         else {
             // In some cases (eg Middleware), the current Visit will
@@ -153,8 +153,8 @@ class Manager
 
     /**
      * Flag to tell if the request has the cookie originally set
-     * 
-     * @param boolean $cookie 
+     *
+     * @param boolean $cookie
      * @return void
      */
     public function setRequestCookie($cookie = true)
@@ -164,7 +164,7 @@ class Manager
 
     /**
      * Return true if a metrics cookie was originally found in the request
-     * 
+     *
      * @return boolean
      */
     public function isCookieInRequest()
@@ -174,14 +174,14 @@ class Manager
 
     /**
      * Indicate if the tracking is enabled for the current request
-     * 
+     *
      * @return boolean
      */
     public function isRequestTracked()
     {
         return $this->trackRequest;
     }
-        
+
     /**
      * Disable tracking for current request
      *
@@ -205,7 +205,7 @@ class Manager
     /**
      * When this method is called, the cookie that will be placed
      * on the user's browser will not be attached to its user_id
-     * 
+     *
      * @return void
      */
     public function setAnonymous($anonymous = true)
@@ -233,7 +233,7 @@ class Manager
 
     /**
      * Return anonymous state of the request
-     * 
+     *
      * @return boolean|null
      */
     public function isAnonymous()
@@ -277,11 +277,11 @@ class Manager
         else {
             return false;
         }
-    }   
+    }
 
     /**
      * Get the time machine instance
-     * 
+     *
      * @return TimeMachine
      */
     protected function getTimeMachine()
@@ -294,18 +294,18 @@ class Manager
     /**
      * Add a custom data provider which will provide the Visit object
      * with a custom field at each request
-     * 
-     * @param Closure | class $callback 
+     *
+     * @param Closure | class $callback
      * @return void
      */
     public function addDataProvider($callback)
-    {   
+    {
         $this->providers[] = $callback;
     }
 
     /**
      * Parse providers and execute them on visit instance
-     * 
+     *
      * @return void
      */
     public function processDataProviders()
@@ -313,19 +313,19 @@ class Manager
         foreach($this->providers as $provider) {
             if($provider instanceof Closure) {
                 $visit = $this->visit;
-                $provider($visit);    
+                $provider($visit);
             }
             else {
                 $provider = $this->app->make($provider);
                 $provider->process($this->visit);
             }
-            
+
         }
     }
 
     /**
      * Return the analyzers classes from config
-     * 
+     *
      * @return array
      */
     protected function getAnalyzersFromConfig()
@@ -335,7 +335,7 @@ class Manager
 
     /**
      * Return the consoliders classes from config
-     * 
+     *
      * @return array
      */
     protected function getConsolidersFromConfig()
@@ -389,9 +389,9 @@ class Manager
     /**
      * Return true if the URL should not be logged as of user configuration
      * or user defined filter
-     * 
+     *
      * @param  Request $request
-     * @return boolean     
+     * @return boolean
      */
     public function isFiltered(Request $request)
     {
@@ -406,15 +406,15 @@ class Manager
                 return true;
             }
         }
-        
+
         return false;
     }
 
-    /** 
+    /**
      * Return true if the Requested url is filtered in metrics config
-     * 
+     *
      * @param  Request $request
-     * @return boolean         
+     * @return boolean
      */
     protected function isFilteredInConfig(Request $request)
     {
@@ -430,8 +430,8 @@ class Manager
 
     /**
      * Add a function to which will be passed the current visit,
-     * right before being saved. 
-     * 
+     * right before being saved.
+     *
      * @param  Closure $filter
      * @return  void
      */
@@ -443,7 +443,7 @@ class Manager
     /**
      * Return true if we need to place a do_not_track cookie at the
      * end of the request
-     * 
+     *
      * @return boolean
      */
     public function hasPlaceDntCookie()
@@ -452,12 +452,23 @@ class Manager
     }
 
     /**
-     * Call this to place a Do_not_track cookie 
-     * 
+     * Call this to place a Do_not_track cookie
+     *
      * @return void
      */
-    public function placeDntCookie() 
+    public function placeDntCookie()
     {
         $this->hasPlaceDntCookie = true;
+    }
+
+    /**
+     * Call this to place a Do_not_track cookie
+     *
+     * @return void
+     */
+    public function removeDntCookie()
+    {
+        $this->hasPlaceDntCookie = false;
+        $this->setTrackingOn();
     }
 }
