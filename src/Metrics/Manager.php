@@ -3,16 +3,11 @@
 namespace Code16\Metrics;
 
 use Closure;
-use Carbon\Carbon;
-use InvalidArgumentException;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Application;
-use Code16\Metrics\Exceptions\TrackingException;
 use Code16\Metrics\Exceptions\MetricException;
 use Code16\Metrics\Repositories\MetricRepository;
 use Code16\Metrics\Repositories\VisitRepository;
-use Code16\Metrics\Contracts\AnalyzerInterface;
-use Code16\Metrics\Contracts\ConsoliderInterface;
 
 class Manager
 {   
@@ -80,8 +75,9 @@ class Manager
 
     /**
      * Generate metrics for all due periods, if they don't exist yet
-     * 
-     *  @return void
+     *
+     * @return bool
+     * @throws MetricException
      */
     public function updateMetrics()
     {
@@ -90,8 +86,9 @@ class Manager
 
     /**
      * Instantiate & Return Updater
-     * 
-     * @return Update
+     *
+     * @return Updater
+     * @throws MetricException
      */
     public function getUpdater()
     {
@@ -348,9 +345,10 @@ class Manager
 
     /**
      * Convert processors class name into object instances
-     * 
-     * @param  array  $processorConfig 
-     * @return  array
+     *
+     * @param array $processorConfig
+     * @return array
+     * @throws MetricException
      */
     protected function instantiateProcessors(array $processorConfig)
     {
@@ -367,7 +365,12 @@ class Manager
         return $processors;
     }
 
-    protected function getPeriodConstantFromString($period) 
+    /**
+     * @param $period
+     * @return int
+     * @throws MetricException
+     */
+    protected function getPeriodConstantFromString($period)
     {
         switch($period) {
             case 'hourly':
@@ -379,6 +382,7 @@ class Manager
             case 'yearly':
                 return Metric::YEARLY;
         }
+
         throw new MetricException("Invalid period in config : $period");
     }
 
@@ -425,7 +429,7 @@ class Manager
     }
 
     /**
-     * Add a function to wich will be passed the current visit,
+     * Add a function to which will be passed the current visit,
      * right before being saved. 
      * 
      * @param  Closure $filter
@@ -444,7 +448,7 @@ class Manager
      */
     public function hasPlaceDntCookie()
     {
-        return $this->placeDntCookie;
+        return $this->hasPlaceDntCookie;
     }
 
     /**
@@ -454,6 +458,6 @@ class Manager
      */
     public function placeDntCookie() 
     {
-        $this->placeDntCookie = true;
+        $this->hasPlaceDntCookie = true;
     }
 }
