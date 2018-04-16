@@ -13,7 +13,7 @@ class UpdateCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'metrics:anonimize';
+    protected $signature = 'metrics:anonymize';
 
     /**
      * The console command description.
