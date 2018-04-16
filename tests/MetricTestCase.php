@@ -240,7 +240,7 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
         $exist = false;
         foreach ($headers->getCookies() as $cookie) {
             if ($cookie->getName() === $cookieName) {
-                $exist = true;
+                $exist = ($cookie->getExpiresTime() > time());
                 break;
             }
         }
