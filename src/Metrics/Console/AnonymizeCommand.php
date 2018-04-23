@@ -5,8 +5,9 @@ namespace Code16\Metrics\Console;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Code16\Metrics\Manager;
+use Code16\Metrics\Repositories\VisitRepository;
 
-class UpdateCommand extends Command
+class AnonymizeCommand extends Command
 {
     /**
      * The name and signature of the console command.
