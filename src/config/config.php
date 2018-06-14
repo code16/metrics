@@ -152,16 +152,43 @@ return [
     | Some parts of the Application, such as an admin dashboard, may not be
     | relevent to log into Metrics, you can specify them here. 
     |
-    | 
-    |
     */
     'filtered_urls' => [],
    
     /*
     |--------------------------------------------------------------------------
-    | Log
+    | User Logging listener
     |--------------------------------------------------------------------------
+    | If set to true, metrics will listen for UserLogged event, and associate
+    | all previous visited pages to this user.
     |
     */
     'logging' => env('METRICS_LOGGING', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable UTM Tracking
+    |--------------------------------------------------------------------------
+    | If set to true, metrics will analyze standard UTM tracking fields in query
+    |
+    */
+   'enable_utm_tracking' => env('METRICS_UTM_TRACKING', true),
+
+   /*
+    |--------------------------------------------------------------------------
+    | UTM Field mapping
+    |--------------------------------------------------------------------------
+    | Customize UTM fields to your preferences here. Note that they will be 
+    | always stored in DB using the standardized format, so changing them
+    | in production won't affect meaning/content.
+    |
+    */
+   'utm_fields_mapping' => [
+        'utm_source' => 'utm_source',
+        'utm_medium' => 'utm_medium',
+        'utm_campaign' => 'utm_campaign',
+        'utm_term' => 'utm_term',
+        'utm_content' => 'utm_content',
+   ],
+
 ];
