@@ -67,7 +67,36 @@ class VisitCreator
         }
 
         $visit->setUserAgent($request->server('HTTP_USER_AGENT') ? $request->server('HTTP_USER_AGENT') : 'undefined');
+
+        if(config('metrics.enable_utm_tracking')) {
+            $umtFields = $this->getUMTFromRequest($request);
+            foreach($umtFields as $fieldKey => $fieldValue) {
+                $visit->setCustomValue($fieldKey, $fieldValue);
+            }
+        }
+
         return $visit;
+    }
+
+    /**
+     * Return utm fields from request
+     * 
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    protected function getUMTFromRequest(Request $request) : array
+    {
+        $fields = config('metrics.utm_fields_mapping');
+        
+        $fieldsInRequest = [];
+        
+        foreach($fields as $standardUMTKey => $mappedKey) {
+            if($request->has($mappedKey)) {
+                $fieldsInRequest[$standardUMTKey] = $request->get($mappedKey);
+            }
+        }
+
+        return $fieldsInRequest;
     }
 
     /**

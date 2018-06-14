@@ -297,4 +297,19 @@ class TrackingTest extends MetricTestCase
         $this->assertEquals(1, VisitModel::count());
     }
 
+    /** @test */
+    public function it_adds_utm_fields_to_custom_fields_if_set()
+    {
+        $router = $this->app->make('router');
+        $router->get('/', function() {
+            return 'ok';
+        });
+        $result = $this->get("/?utm_source=source&utm_content=content&utm_medium=medium&utm_campaign=campaign&utm_term=term"); $result->assertStatus(200);
+        $visit = app(\Code16\Metrics\Repositories\VisitRepository::class)->first();
+        $this->assertEquals("source", $visit->getCustomValue("utm_source"));
+        $this->assertEquals("content", $visit->getCustomValue("utm_content"));
+        $this->assertEquals("medium", $visit->getCustomValue("utm_medium"));
+        $this->assertEquals("campaign", $visit->getCustomValue("utm_campaign"));
+        $this->assertEquals("term", $visit->getCustomValue("utm_term"));
+    }
 }
