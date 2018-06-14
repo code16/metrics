@@ -180,6 +180,7 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
     protected function makeVisit(array $attributes = [], $startDate = '-1 year')
     {
         $faker = $this->faker;
+        $utm = $this->generateRandomUTMData();
         $data = [
             'user_id' => null,
             'url' => $faker->randomElement($this->getUrlStack()),
@@ -189,7 +190,7 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
             'cookie' => $faker->sha256,
             'referer' => '',
             'actions' => [],
-            'custom' => [],
+            'custom' => $utm,
             'anonymous' => false,
             'session_id' => $faker->sha256,
             'status_code' => 200,
@@ -199,6 +200,17 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
         }
 
         return Visit::createFromArray($data);
+    }
+
+    protected function generateRandomUTMData() : array
+    {
+        return $this->faker->randomElement([[], [
+            'utm_source' => 'utm_source',
+            'utm_medium' => 'utm_medium',
+            'utm_campaign' => 'utm_campaign',
+            'utm_term' => 'utm_term',
+            'utm_content' => 'utm_content',
+        ]]);
     }
 
     /**

@@ -50,9 +50,6 @@ class UrlAnalyzer extends Analyzer
         }
 
         return $newStatistics;
-
-
     }
-
 
 }

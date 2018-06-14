@@ -115,6 +115,11 @@ return [
             Code16\Metrics\Analyzers\VisitorAnalyzer::class,
             Code16\Metrics\Analyzers\UrlAnalyzer::class,
             Code16\Metrics\Analyzers\UserAgentAnalyzer::class,
+            Code16\Metrics\Analyzers\UTM\SourceAnalyzer::class,
+            Code16\Metrics\Analyzers\UTM\CampaignAnalyzer::class,
+            Code16\Metrics\Analyzers\UTM\MediaAnalyzer::class,
+            Code16\Metrics\Analyzers\UTM\TermAnalyzer::class,
+            Code16\Metrics\Analyzers\UTM\ContentAnalyzer::class,
         ],
         'daily' => [
             Code16\Metrics\Analyzers\UniqueVisitorAnalyzer::class,
@@ -129,6 +134,11 @@ return [
             Code16\Metrics\Analyzers\VisitorAnalyzer::class,
             Code16\Metrics\Analyzers\UrlAnalyzer::class,
             Code16\Metrics\Analyzers\UserAgentAnalyzer::class,
+            Code16\Metrics\Analyzers\UTM\SourceAnalyzer::class,
+            Code16\Metrics\Analyzers\UTM\CampaignAnalyzer::class,
+            Code16\Metrics\Analyzers\UTM\MediaAnalyzer::class,
+            Code16\Metrics\Analyzers\UTM\TermAnalyzer::class,
+            Code16\Metrics\Analyzers\UTM\ContentAnalyzer::class,
         ],
         'monthly' => [
             Code16\Metrics\Analyzers\VisitorAnalyzer::class,
