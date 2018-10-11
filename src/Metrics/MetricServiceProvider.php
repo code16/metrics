@@ -24,8 +24,6 @@ class MetricServiceProvider extends ServiceProvider {
     /**
      * This will be used to register config & view in 
      * your package namespace.
-     *
-     * --> Replace with your package name <--
      */
     protected $packageName = 'metrics';
 
@@ -36,14 +34,13 @@ class MetricServiceProvider extends ServiceProvider {
      */
     public function boot()
     {
-        // Regiter migrations
+        // Register migrations
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         
         // Publish your config
         $this->publishes([
             __DIR__.'/../config/config.php' => config_path($this->packageName.'.php'),
         ], 'config');
-
     }
 
     /**

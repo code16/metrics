@@ -10,10 +10,11 @@ abstract class UtmAnalyzer extends Analyzer
 {
     protected $field;
 
-     /**
+    /**
      * Extract statistics from a range of visits
-     * 
+     *
      * @param  Collection $visits [description]
+     * @param TimeInterval $interval
      * @return array
      */
     public function compile(Collection $visits, TimeInterval $interval)
@@ -22,54 +23,38 @@ abstract class UtmAnalyzer extends Analyzer
         $values = [];
 
         foreach($visits as $visit) {
-            
-            $value = $visit->hasCustomValue($field) ? $visit->getCustomValue($field) : null;
+            $value = $visit->hasCustomValue($field)
+                ? $visit->getCustomValue($field)
+                : null;
 
             if($value) {
-                $values[$value] = array_key_exists($value, $values)
-                    ? $values[$value]++
-                    : 1;
+                $values[$value] = ($values[$value] ?? 0) + 1;
             }
         }
 
-        return [$field => $values];
-    }   
+        return $values;
+    }
 
 
     /**
      * Consolidate several metrics objects
-     * 
-     * @param  Collection $statistics
-     * @return 
+     *
+     * @param Collection $metrics
+     * @param TimeInterval $interval
+     * @return array
      */
     public function consolidate(Collection $metrics, TimeInterval $interval)
     {
-        $newStatistics = [];
+        $combined = [];
 
         foreach ($metrics as $metric) {
-            $stat = $metric->getStatisticsByKey(get_class($this));
-            $newStatistics = $this->array_add($newStatistics, $stat);
+            $items = $metric->getStatisticsByKey(get_class($this));
+
+            foreach($items as $id => $hits) {
+                $combined[$id] = ($combined[$id] ?? 0) + $hits;
+            }
         }
 
-        return $newStatistics;
-    }
-
-    protected function array_add(array $a, array $b)
-    {
-        $c = [];
-        foreach(array_keys($a) as $key) {
-            $c[$key] = array_key_exists($key, $b) 
-                ? $a[$key] + $b[$key]
-                : $a[$key];
-        }
-        foreach(array_keys($b) as $key) {
-            $c[$key] = array_key_exists($key, $c) 
-                ? $c[$key]
-                : array_key_exists($key, $a)
-                     ? $a[$key] + $b[$key]
-                     : $b[$key]; 
-        }
-
-        return $c;
+        return $combined;
     }
 }

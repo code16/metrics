@@ -7,7 +7,7 @@ return [
     | Custom database connection
     |--------------------------------------------------------------------------
     |
-    | Use a custom database conenction for metrics tables / models. If set to
+    | Use a custom database connection for metrics tables / models. If set to
     | null, will use the default laravel connection.
     |
     */
