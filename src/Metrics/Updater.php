@@ -4,7 +4,6 @@ namespace Code16\Metrics;
 
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Code16\Metrics\Exceptions\MetricException;
 use Code16\Metrics\Repositories\MetricRepository;
 use Code16\Metrics\Repositories\VisitRepository;
 use Code16\WriteToConsole\WriteToConsole;
@@ -33,6 +32,12 @@ class Updater
      */
     protected $consoliders;
 
+    /**
+     * @param MetricRepository $metrics
+     * @param VisitRepository $visits
+     * @param array $analyzers
+     * @param array $consoliders
+     */
     public function __construct(MetricRepository $metrics, VisitRepository $visits, array $analyzers, array $consoliders)
     {
         $this->metrics = $metrics;
@@ -55,9 +60,8 @@ class Updater
         if($start && $end) {
             return $this->processUpdate($start, $end);
         }
-        else {
-            return false;
-        }
+
+        return false;
     }
 
     /**
@@ -82,33 +86,28 @@ class Updater
         $missingPeriods = new Collection($this->parseForMissingMetrics($completePeriods));
 
         if($missingPeriods) {
-            // Now, we'll have to sort them by type as we want to process the smaller
-            // unit first.
+            // Now, we'll have to sort them by type as we want to process the smaller unit first.
             $sortedPeriods = $missingPeriods->sortBy(function ($item, $key) {
                 return $item->type();
             });
 
             foreach ($sortedPeriods as $period) {
-                // Process will return false if there was no data to handle in
-                // a given period.
-                
+                // Process will return false if there was no data to handle in a given period.
                 $metric = $this->process($period);
                 
                 if($metric) {
                     $this->metrics->store($metric);
                     $this->info("Analyzed & Stored : $metric");
-                }
-                else {
+
+                } else {
                     $this->warning("No data for period : $period");
                 }
             }
 
             return true;
         }
-        else {
-            return false;
-        }
-       
+
+        return false;
     }
 
     /**
@@ -122,12 +121,9 @@ class Updater
         if($period->type() == Metric::HOURLY) {
             return $this->processAnalyze($period);
         }
-        else {
-            $metric = $this->processAnalyze($period);
-            
-            $metric = $this->processConsolidate($period, $metric);    
-        }
-        return $metric;
+
+        $metric = $this->processAnalyze($period);
+        return $this->processConsolidate($period, $metric);
     }
 
     /**
@@ -154,23 +150,16 @@ class Updater
         // instance, and pass it over to consolidate
         
         if($this->hasAnalyzers($period->type())) {
-        
             $compiler = new Compiler($this->analyzers[$period->type()]);
             $visits = $this->visits->getTimeInterval($period->start(), $period->end());
 
-            if(count($visits) > 0) {
+            if (count($visits) > 0) {
                 $statistics = $compiler->compile($visits, $period);
-                $metric = Metric::create($period, $statistics, count($visits));
+                return Metric::create($period, $statistics, count($visits));
             }
-            else {
-                $metric = Metric::create($period, [], 0);
-            }
-        }
-        else {
-            $metric = Metric::create($period, [], 0);
         }
 
-        return $metric;
+        return Metric::create($period, [], 0);
     }
 
     /**
@@ -182,26 +171,18 @@ class Updater
      */
     protected function processConsolidate(TimeInterval $period, Metric $metric)
     {
-        $consolider = new Consolider($this->consoliders[$period->type()]);
-
-        $metrics = $this->metrics->getTimeIntervalByType($period, $period->type() - 1);
-        
-        if($metrics) {
-
-            $count = $metrics->reduce(function ($carrier, $metric) {
-                return $carrier + $metric->getCount();
-            }, 0);
-
-            $metric->setCount($count);
-
-            $statistics = $consolider->consolidate($metrics, $period);
-
-            $metric->setStatistics(array_merge($metric->getStatistics(), $statistics));
-        }
-        else {
+        if(!$metrics = $this->metrics->getTimeIntervalByType($period, $period->type() - 1)) {
             return null;
-            //throw new MetricException("Metrics should'nt be null");
         }
+
+        $metric->setCount($metrics->reduce(function ($carrier, $metric) {
+            return $carrier + $metric->getCount();
+        }, 0));
+
+        $consolider = new Consolider($this->consoliders[$period->type()]);
+        $statistics = $consolider->consolidate($metrics, $period);
+
+        $metric->setStatistics(array_merge($metric->getStatistics(), $statistics));
 
         return $metric;
     }
@@ -321,17 +302,14 @@ class Updater
         // the start of our reference period. 
         if($firstMetric = $this->metrics->first()) {
             $start = $firstMetric->getStart();
+
             return $start->startOfYear();
+
+        } elseif($start = $this->visits->first()) {
+            return $start->getDate()->startOfYear();
         }
-        else {  
-            $start = $this->visits->first(); 
-            if($start) {
-                return $start->getDate()->startOfYear();
-            }
-            else {
-                return null;
-            }
-        }
+
+        return null;
     }
 
     /**
@@ -344,5 +322,4 @@ class Updater
     {
         return Carbon::now()->subHour()->minute(59)->second(59);
     }
-    
 }

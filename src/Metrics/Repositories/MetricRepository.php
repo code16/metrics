@@ -4,6 +4,7 @@ namespace Code16\Metrics\Repositories;
 
 use Code16\Metrics\Metric;
 use Code16\Metrics\TimeInterval;
+use Illuminate\Support\Collection;
 
 interface MetricRepository {
 

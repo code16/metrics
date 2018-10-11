@@ -22,14 +22,14 @@ class UpdateCommand extends Command
     protected $description = 'Update statistics';
 
     /**
-     * @var Code16\Metrics\Manager
+     * @var Manager
      */
     protected $manager;
 
     /**
      * Create a new command instance.
      *
-     * @return void
+     * @param Manager $manager
      */
     public function __construct(Manager $manager)
     {
@@ -41,6 +41,7 @@ class UpdateCommand extends Command
      * Execute the console command.
      *
      * @return mixed
+     * @throws \Code16\Metrics\Exceptions\MetricException
      */
     public function handle()
     {
@@ -52,8 +53,8 @@ class UpdateCommand extends Command
 
         if($result === true) {
             $this->info('Statistics updated successfully');
-        }
-        else {
+
+        } else {
             $this->error('Something went wrong while updating statistics.');
         }
     }

@@ -6,6 +6,7 @@ use Code16\Metrics\Metric;
 use Code16\Metrics\TimeInterval;
 use Code16\Metrics\Repositories\MetricRepository;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 
 class MetricEloquentRepository implements MetricRepository
 {
@@ -37,14 +38,15 @@ class MetricEloquentRepository implements MetricRepository
      */
     public function find(TimeInterval $interval)
     {
-        $metric = $this->metric->where('start', $interval->start())->where('end', $interval->end())->first();
+        $metric = $this->metric
+            ->where('start', $interval->start())->where('end', $interval->end())
+            ->first();
 
         if($metric) {
             return $this->toObject($metric);
         }
-        else {
-            return null;
-        }
+
+        return null;
     }
 
     /** 
@@ -55,7 +57,10 @@ class MetricEloquentRepository implements MetricRepository
      */
     public function has(TimeInterval $interval)
     {
-        $count = $this->metric->where('start', $interval->start())->where('end', $interval->end())->count();
+        $count = $this->metric
+            ->where('start', $interval->start())
+            ->where('end', $interval->end())
+            ->count();
 
         return $count > 0;
     }
@@ -67,14 +72,11 @@ class MetricEloquentRepository implements MetricRepository
      */
     public function first()
     {
-        $metric = $this->metric->orderBy('start', 'asc')->first();
-
-        if($metric) {
+        if($metric = $this->metric->orderBy('start', 'asc')->first()) {
             return $this->toObject($metric);
         }
-        else {
-            return null;
-        }
+
+        return null;
     }
 
     /**
@@ -85,7 +87,9 @@ class MetricEloquentRepository implements MetricRepository
      */
     public function getTimeInterval(TimeInterval $interval)
     {
-        $metrics = $this->metric->where('start', '>=', $interval->start())->where('end', '<', $interval->end())->get();
+        $metrics = $this->metric
+            ->where('start', '>=', $interval->start())->where('end', '<', $interval->end())
+            ->get();
         
         return $this->convertCollection($metrics);
     }
@@ -121,27 +125,19 @@ class MetricEloquentRepository implements MetricRepository
 
     /**
      * Store a Metric object
+     *
      * @param  Metric $metric 
-     * @return  void
      */
     public function store(Metric $metric)
     {
-        $attributes = $metric->toArray();
-
-        if(isset($attributes['id']) && $attributes['id'] !== null) {
-            return $this->saveExisting($attributes);
-        }
-        else {
-            unset($attributes['id']);
-        }
-
-        $metric = MetricModel::create($attributes);
+        MetricModel::create($metric->toArray());
     }
 
     /**
      * Convert an Eloquent Collection into a standard Collection of Visit objects
-     * 
-     * @return Collection
+     *
+     * @param EloquentCollection $collection
+     * @return \Illuminate\Support\Collection
      */
     protected function convertCollection(EloquentCollection $collection)
     {
@@ -154,6 +150,6 @@ class MetricEloquentRepository implements MetricRepository
 
     protected function toObject(MetricModel $model)
     {
-        return Metric::createFromArray($model->toArray() );
+        return Metric::createFromArray($model->toArray());
     }
 }
