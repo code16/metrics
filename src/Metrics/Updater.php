@@ -118,12 +118,11 @@ class Updater
      */
     protected function process(TimeInterval $period)
     {
-        if($period->type() == Metric::HOURLY) {
-            return $this->processAnalyze($period);
-        }
-
         $metric = $this->processAnalyze($period);
-        return $this->processConsolidate($period, $metric);
+
+        return ($period->type() == Metric::HOURLY)
+            ? $metric
+            : $this->processConsolidate($period, $metric);
     }
 
     /**
@@ -138,7 +137,7 @@ class Updater
     }
 
     /**
-     * Process Analize and output a metric
+     * Process Analyze and output a metric
      * 
      * @param  TimeInterval $period
      * @return Metric
