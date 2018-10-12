@@ -58,19 +58,17 @@ class VisitCreator
 
         if($cookiePresent || $anonCookiePresent) {
             $visit->setCookie($cookie);
-        }
-        else {
+        } else {
             // If no cookie was found, we'll refer to config for which cookie to create
             $anonymousState = config('metrics.anonymous');
             $visit->setAnonymous($anonymousState);
             $visit->setCookie();
         }
 
-        $visit->setUserAgent($request->server('HTTP_USER_AGENT') ? $request->server('HTTP_USER_AGENT') : 'undefined');
+        $visit->setUserAgent($request->server('HTTP_USER_AGENT') ?: 'undefined');
 
         if(config('metrics.enable_utm_tracking')) {
-            $umtFields = $this->getUMTFromRequest($request);
-            foreach($umtFields as $fieldKey => $fieldValue) {
+            foreach($this->getUMTFromRequest($request) as $fieldKey => $fieldValue) {
                 $visit->setCustomValue($fieldKey, $fieldValue);
             }
         }
@@ -80,9 +78,9 @@ class VisitCreator
 
     /**
      * Return utm fields from request
-     * 
-     * @param  Request $request [description]
-     * @return [type]           [description]
+     *
+     * @param  Request $request
+     * @return array
      */
     protected function getUMTFromRequest(Request $request) : array
     {
@@ -110,14 +108,13 @@ class VisitCreator
         $visit = $this->visits->oldestVisitForCookie($cookie);
 
         if($visit) {
+            $maximumLifetimeDate = Carbon::now()->sub(
+                DateInterval::createFromDateString(config('metrics.cookie_lifetime'))
+            );
 
-            $lifetime = config('metrics.cookie_lifetime');
-            $date = $visit->getDate();
-            $maximumLifetimeDate = Carbon::now()->sub(DateInterval::createFromDateString($lifetime));
-            if($date->lt($maximumLifetimeDate)) {
-                return true;
-            }
+            return $visit->getDate()->lt($maximumLifetimeDate);
         }
+
         return false;
     }
 }

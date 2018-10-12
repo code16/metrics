@@ -51,15 +51,12 @@ class TimeMachine
             return false;
         }
 
-        if($currentCookie != $lastVisit->getCookie())
-        {
+        if($currentCookie != $lastVisit->getCookie()) {
             // If the value is different, we'll set the current visit's cookie
             // to the one used in last visit, and update any previous visit instance
             // to the same value.
             $this->currentVisit->setCookie($lastVisit->getCookie());
-
             $this->visits->translateCookie($currentCookie, $lastVisit->getCookie());
-
             $currentCookie = $lastVisit->getCookie();
         }
 
@@ -96,11 +93,12 @@ class TimeMachine
             return false;
         }
         
-        $sessionId = $this->currentVisit->getSessionId();
-
-        $this->visits->updateSessionId($this->currentVisit->getCookie(), $sessionId, $previousVisit->getDate(), Carbon::now());
+        $this->visits->updateSessionId(
+            $this->currentVisit->getCookie(),
+            $this->currentVisit->getSessionId(),
+            $previousVisit->getDate(), Carbon::now()
+        );
         
         return true;
-
     }
 }

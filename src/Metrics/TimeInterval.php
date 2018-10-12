@@ -4,12 +4,16 @@ namespace Code16\Metrics;
 
 use Carbon\Carbon;
 
-// This is a simple value object to simplify time interval handling, and 
-// preserve its integrity by only delivering copy of Carbon objects.
+/**
+ * This is a simple value object to simplify time interval handling, and
+ * preserve its integrity by only delivering copy of Carbon objects.
+ */
 class TimeInterval {
 
+    /** @var Carbon */
     protected $start;
 
+    /** @var Carbon */
     protected $end;
 
     protected $type;
@@ -50,10 +54,11 @@ class TimeInterval {
 
     /**
      * Create a new interval object for the given dates
-     * 
+     *
      * @param  Carbon $start
-     * @param  Carbon $end 
-     * @return  TimeInterval
+     * @param  Carbon $end
+     * @param $type
+     * @return TimeInterval
      */
     protected function createInterval($start, $end, $type)
     {
@@ -70,9 +75,8 @@ class TimeInterval {
         if($this->type == Metric::HOURLY) {
             return [];
         }
-        else {
-            return $this->divideByType($this->type);
-        }
+
+        return $this->divideByType($this->type);
     }
 
     /**
@@ -107,9 +111,10 @@ class TimeInterval {
     }
 
     /**
-     * Divide 
-     * @param  [type] $type [description]
-     * @return [type]       [description]
+     * Divide
+     *
+     * @param $type
+     * @return array
      */
     protected function divideInto($type)
     {
@@ -118,8 +123,7 @@ class TimeInterval {
 
         for($x = 0; $x < $offset; $x++) {
             $dividedIntervals = [];
-            foreach($intervals as $interval)
-            {
+            foreach($intervals as $interval) {
                 $dividedIntervals = array_merge($dividedIntervals, $interval->divide());
             }
             $intervals = $dividedIntervals;
@@ -137,10 +141,12 @@ class TimeInterval {
                 $basePeriod = 'year';
                 $dividePeriod = 'month';
                 break;
+
             case Metric::MONTHLY:
                 $basePeriod = 'month';
                 $dividePeriod = 'day';
                 break;
+
             case Metric::DAILY:
                 $basePeriod = 'day';
                 $dividePeriod = 'hour';
@@ -159,12 +165,10 @@ class TimeInterval {
         while($start->$basePeriod == $base) {
             
             // Compensating for the missing Carbon endOfHour() method...
-            if($type == Metric::DAILY) {
-                $end = $this->endOfHour($start->copy());
-            }
-            else {
-                $end = $start->copy()->$endMethod();
-            }
+            $end = ($type == Metric::DAILY)
+                ? $this->endOfHour($start->copy())
+                : $start->copy()->$endMethod();
+
             $intervals[] = new TimeInterval($start, $end, $type - 1);
             $start->$addMethod();
         }
@@ -207,9 +211,11 @@ class TimeInterval {
      */
     public function __toString()
     {
-        $start = $this->start->toDateTimeString();
-        $end = $this->end->toDateTimeString();
-        $type = $this->getTypeString();
-        return "$type time interval from $start to $end";
+        return sprintf(
+            "%s time interval from %s to %s",
+            $this->getTypeString(),
+            $this->start->toDateTimeString(),
+            $this->end->toDateTimeString()
+        );
     }
 }

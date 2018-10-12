@@ -176,9 +176,11 @@ class Metric
      */
     public function __toString()
     {
-        $start = $this->start->toDateTimeString();
-        $end = $this->end->toDateTimeString();
-        $type = $this->getTypeString();
-        return "$type Metrics from $start to $end";
+        return sprintf(
+            "%s Metrics from %s to %s",
+            $this->getTypeString(),
+            $this->start->toDateTimeString(),
+            $this->end->toDateTimeString()
+        );
     }
 }

@@ -33,4 +33,6 @@ interface VisitRepository {
     public function countByTimeInterval(TimeInterval $interval);
 
     public function anonymizeUntil(Carbon $until);
+
+    public function updateSessionId($cookie, $sessionId, Carbon $from, Carbon $to);
 }

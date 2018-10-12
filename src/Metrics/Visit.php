@@ -10,7 +10,6 @@ class Visit implements Arrayable
 {
     /**
      * id of the record in database
-     * 
      * @var string
      */
     protected $id;
@@ -22,77 +21,66 @@ class Visit implements Arrayable
    
     /**
      * IP of the visit
-     * 
      * @var string
      */
     protected $ip;
 
     /**
      * Full user agent of the visit
-     * 
      * @var string
      */
     protected $user_agent;
 
     /**
      * The tracking cookie, if set
-     * 
      * @var string
      */
     protected $cookie;
 
     /**
      * The full url of the visit (without query string)
-     * 
      * @var string
      */
     protected $url;
 
     /**
      * The referer for current visit
-     * 
      * @var string
      */
     protected $referer;
 
     /**
-     * Actions objets
-     * 
+     * Action objects
      * @var Collection
      */
     protected $actions;
 
     /**
      * Custom data to be added 
-     * 
      * @var array
      */
     protected $custom = [];
 
     /**
      * DateTime of the visit
-     *
      * @var Carbon
      */
     protected $date;
 
     /**
      * Anonymous flag
-     * 
      * @var boolean
      */
     protected $anonymous;
 
     /**
      * Laravel's session id
-     * 
      * @var string
      */
     protected $session_id;
 
     /**
      * Response status code
-     *
      * @var string
      */
     protected $status_code;
@@ -106,15 +94,14 @@ class Visit implements Arrayable
      * Create a Visit instance from an array. We'll use this Essentially
      * to reconstruct a Visit object from a database row.
      * 
-     * @param  array  $data
+     * @param array $data
      * @return Visit
      */
     public static function createFromArray(array $data)
     {
-        $visit = new Static;
-        if (isset($data['id'])) {
-            $visit->id = $data['id'];    
-        }
+        $visit = new static;
+
+        $visit->id = $data['id'] ?? null;
         $visit->ip = $data['ip'];
         $visit->user_agent = $data['user_agent'];
         $visit->user_id = $data['user_id'];
@@ -126,9 +113,11 @@ class Visit implements Arrayable
         $visit->anonymous = $data['anonymous'];
         $visit->session_id = $data['session_id'];
         $visit->status_code = $data['status_code'];
+
         foreach($data['actions'] as $action) {
             $visit->addAction(unserialize($action));
         }
+
         return $visit;
     }
 
@@ -240,18 +229,13 @@ class Visit implements Arrayable
      */
     public function setCookie($cookie = null)
     {
-        if($cookie) {
-            $this->cookie = $cookie;
-        }
-        else {
-            $this->cookie = str_random(32);
-        }
+        $this->cookie = $cookie ?: str_random(32);
     }
 
     /**
      * Return date
-     * 
-     * @return Carbon\Carbon
+     *
+     * @return Carbon
      */
     public function getDate()
     {
@@ -261,7 +245,7 @@ class Visit implements Arrayable
     /**
      * Set date
      * 
-     * @param Carbon $date [description]
+     * @param Carbon $date
      */
     public function setDate(Carbon $date)
     {   
@@ -291,7 +275,7 @@ class Visit implements Arrayable
     /**
      * Set Session id
      * 
-     * @param string  $sessionId 
+     * @param string $sessionId
      */
     public function setSessionId($sessionId)
     {
@@ -311,7 +295,7 @@ class Visit implements Arrayable
     /**
      * Set status code
      * 
-     * @param string  $statusCode
+     * @param string $statusCode
      */
     public function setStatusCode($statusCode)
     {
@@ -331,7 +315,7 @@ class Visit implements Arrayable
     /**
      * Get actions on this visit
      * 
-     * @return ActionCollection
+     * @return Collection
      */
     public function actions()
     {
@@ -341,12 +325,13 @@ class Visit implements Arrayable
     /**
      * Attach an action to the visit
      * 
-     * @param Action $action [description]
+     * @param Action $action
      * @return Visit
      */
     public function addAction(Action $action)
     {
         $this->actions->push($action);
+
         return $this;
     }
 
@@ -363,6 +348,7 @@ class Visit implements Arrayable
                 return $action;
             }
         }
+
         return null;
     }
 
@@ -374,12 +360,7 @@ class Visit implements Arrayable
      */
     public function hasAction($actionClass)
     {
-        foreach($this->actions as $action) {
-            if(get_class($action) == $actionClass) {
-                return true;
-            }
-        }
-        return false;
+        return !is_null($this->getAction($actionClass));
     }
 
     /**
@@ -446,13 +427,11 @@ class Visit implements Arrayable
      */
     protected function getSerializedActions()
     {
-        $actions = [];
-
-        foreach($this->actions as $action) {
-            $actions[] = serialize($action);
-        }
-
-        return $actions;
+        return $this->actions
+            ->map(function($action) {
+                return serialize($action);
+            })
+            ->all();
     }
 
     /**

@@ -19,5 +19,4 @@ class VisitCollection extends Collection
             return $visit->hasAction($type);
         });
     }
-
 }
