@@ -2,6 +2,8 @@
 
 namespace Code16\Metrics\Tests;
 
+use Code16\Metrics\Repositories\VisitRepository;
+use Illuminate\Support\Facades\Route;
 use Mockery;
 use Code16\Metrics\Tests\Stubs\AcmeAction;
 use Code16\Metrics\Tests\Stubs\AcmeProvider;
@@ -289,27 +291,41 @@ class TrackingTest extends MetricTestCase
         });
 
         // Query an url that will trigger a 404
-        $result = $this->get('/some_non_existing_url');
+        $this->get('/some_non_existing_url');
         $this->assertEquals(0, VisitModel::count());
 
         // Query an actual URL
-        $result = $this->get('/some_url');
+        $this->get('/some_url');
         $this->assertEquals(1, VisitModel::count());
     }
 
     /** @test */
     public function it_adds_utm_fields_to_custom_fields_if_set()
     {
-        $router = $this->app->make('router');
-        $router->get('/', function() {
-            return 'ok';
-        });
-        $result = $this->get("/?utm_source=source&utm_content=content&utm_medium=medium&utm_campaign=campaign&utm_term=term"); $result->assertStatus(200);
-        $visit = app(\Code16\Metrics\Repositories\VisitRepository::class)->first();
-        $this->assertEquals("source", $visit->getCustomValue("utm_source"));
-        $this->assertEquals("content", $visit->getCustomValue("utm_content"));
-        $this->assertEquals("medium", $visit->getCustomValue("utm_medium"));
-        $this->assertEquals("campaign", $visit->getCustomValue("utm_campaign"));
-        $this->assertEquals("term", $visit->getCustomValue("utm_term"));
+        Route::get('/', [
+            'as' => 'home',
+            'uses' => function() {
+                return 'ok';
+            }
+        ]);
+
+        $utmFields = [
+            "utm_source" => "source",
+            "utm_content" => "content",
+            "utm_medium" => "medium",
+            "utm_campaign" => "campaign",
+            "utm_term" => "term"
+        ];
+
+        $result = $this->get(route("home", $utmFields));
+        $result->assertStatus(200);
+
+        $visit = app(VisitRepository::class)->first();
+
+        foreach($utmFields as $utm => $value) {
+            $this->assertEquals($value, $visit->getCustomValue($utm));
+        }
+
+        $result->assertSessionHas("metrics.utm_fields", $utmFields);
     }
 }

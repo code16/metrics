@@ -58,6 +58,7 @@ class VisitCreator
 
         if($cookiePresent || $anonCookiePresent) {
             $visit->setCookie($cookie);
+
         } else {
             // If no cookie was found, we'll refer to config for which cookie to create
             $anonymousState = config('metrics.anonymous');
@@ -68,8 +69,16 @@ class VisitCreator
         $visit->setUserAgent($request->server('HTTP_USER_AGENT') ?: 'undefined');
 
         if(config('metrics.enable_utm_tracking')) {
-            foreach($this->getUMTFromRequest($request) as $fieldKey => $fieldValue) {
-                $visit->setCustomValue($fieldKey, $fieldValue);
+            $utmFields = $this->getUMTFromRequest($request);
+
+            if(sizeof($utmFields)) {
+                foreach ($utmFields as $fieldKey => $fieldValue) {
+                    $visit->setCustomValue($fieldKey, $fieldValue);
+                }
+
+                // Store UTMs in session, in order to be used by Actions later in the session,
+                // if we need to track UTMs in some custom Action
+                session()->put("metrics.utm_fields", $utmFields);
             }
         }
 

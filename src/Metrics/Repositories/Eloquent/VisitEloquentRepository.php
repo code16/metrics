@@ -270,14 +270,13 @@ class VisitEloquentRepository implements VisitRepository
     {
         $attributes = $visit->toArray();
         
-        if(isset($attributes['id']) && $attributes['id'] !== null) {
-            return $this->saveExisting($attributes);
-        }
-        else {
-            unset($attributes['id']);
+        if($attributes['id'] ?? null) {
+            $this->saveExisting($attributes);
+            return;
         }
 
-        $visit = VisitModel::create($attributes);
+        unset($attributes['id']);
+        VisitModel::create($attributes);
     }
 
     /**

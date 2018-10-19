@@ -30,48 +30,40 @@ class MetricMiddleware
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
-     * @param  string|null  $guard
      * @return mixed
      */
     public function handle($request, Closure $next)
     {
-        // First we'll create the visit object, weither it will
-        // be used or not, this will prevent other part of the
-        // package to fails. 
+        // First we'll create the visit object, whether it will be used or not,
+        // as this will prevent other part of the package to fails.
         $visit = $this->visitCreator->createFromRequest($request);
         $this->metricManager->track($visit);
 
-        // Then we implent some logic to tell if the request has
-        // to be tracked or not
-        
-        // Handle the 'Do Not Track' header && cookies
+        // Handle the 'Do Not Track' header && cookie
         if($request->server('HTTP_DNT') || $request->hasCookie(config('metrics.do_not_track_cookie_name'))) {
             $this->metricManager->setTrackingOff();
+
             return $next($request);
         }
 
-        // In the other cases, we'll only track the visit
-        // if a Metric cookie already exist in the request
-        if ($request->hasCookie(config('metrics.cookie_name'))) {
+        // In other cases, we'll only track the visit if a Metric cookie already exist in the request
+        if ($request->hasCookie(config('metrics.cookie_name')) || $request->hasCookie(config('metrics.anonymous_cookie_name'))) {
             $this->metricManager->setRequestCookie(true);
             $this->metricManager->setTrackingOn();
-            return $next($request);
-        }
-        if ($request->hasCookie(config('metrics.anonymous_cookie_name'))) {
-            $this->metricManager->setRequestCookie(true);
-            $this->metricManager->setTrackingOn();
+
             return $next($request);
         }
 
-        // If auto_place_cookie is on true, we'll log 
-        // the request on every case
+        // If auto_place_cookie is on true, we'll log the request on every case
         if(config()->get('metrics.auto_place_cookie')) {
             $this->metricManager->setTrackingOn();
+
             return $next($request);
         }
 
         // In every other case, we'll set the tracking to off
         $this->metricManager->setTrackingOff();
+
         return $next($request);
     }
 }
