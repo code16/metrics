@@ -1,5 +1,8 @@
 <?php namespace Code16\Metrics;
 
+use Code16\Metrics\Console\AnonymizeCommand;
+use Code16\Metrics\Console\MigrateCommand;
+use Code16\Metrics\Console\UpdateCommand;
 use Illuminate\Support\ServiceProvider;
 use Code16\Metrics\Middleware\MetricMiddleware;
 use Code16\Metrics\Repositories\VisitRepository;
@@ -71,8 +74,9 @@ class MetricServiceProvider extends ServiceProvider {
         $this->registerListeners();
 
         $this->commands([
-            \Code16\Metrics\Console\UpdateCommand::class,
-            \Code16\Metrics\Console\MigrateCommand::class,
+            UpdateCommand::class,
+            MigrateCommand::class,
+            AnonymizeCommand::class,
         ]);
     }
 
