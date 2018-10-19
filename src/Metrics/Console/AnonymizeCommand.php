@@ -4,7 +4,6 @@ namespace Code16\Metrics\Console;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Code16\Metrics\Manager;
 use Code16\Metrics\Repositories\VisitRepository;
 
 class AnonymizeCommand extends Command
@@ -24,12 +23,17 @@ class AnonymizeCommand extends Command
     protected $description = 'Clean references to user_id in visits older than 12 months';
 
     /**
-     * @var Code16\Metrics\Repositories\VisitRepository
+     * @var VisitRepository
      */
     protected $visits;
 
+    /**
+     * @param VisitRepository $visits
+     */
     public function __construct(VisitRepository $visits)
     {
+        parent::__construct();
+
         $this->visits = $visits;
     }
 
