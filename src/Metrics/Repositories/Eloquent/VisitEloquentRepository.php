@@ -283,15 +283,15 @@ class VisitEloquentRepository implements VisitRepository
      * Store an existing record
      * 
      * @param  array  $attributes 
-     * @return 
      */
     protected function saveExisting(array $attributes)
     {
-        $id = $attributes['id'];
-        $visitModel = Visit::find($id);
+        $visitModel = Visit::find($attributes['id']);
+
         foreach($attributes as $key => $value) {
             $visitModel->$key = $value;
         }
+
         $visitModel->save();
     }
 

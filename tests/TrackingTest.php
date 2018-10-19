@@ -2,16 +2,16 @@
 
 namespace Code16\Metrics\Tests;
 
+use Code16\Metrics\Manager;
+use Code16\Metrics\Repositories\Eloquent\VisitModel;
 use Code16\Metrics\Repositories\VisitRepository;
-use Illuminate\Support\Facades\Route;
-use Mockery;
 use Code16\Metrics\Tests\Stubs\AcmeAction;
 use Code16\Metrics\Tests\Stubs\AcmeProvider;
-use Code16\Metrics\Manager;
-use Code16\Metrics\Visit;
-use Code16\Metrics\Repositories\Eloquent\VisitModel;
-use Illuminate\Auth\Events\Login;
+use Code16\Metrics\Tests\Stubs\AcmeWithUtmFieldsAction;
 use Code16\Metrics\TimeMachine;
+use Code16\Metrics\Visit;
+use Illuminate\Support\Facades\Route;
+use Mockery;
 
 class TrackingTest extends MetricTestCase
 {
@@ -327,5 +327,23 @@ class TrackingTest extends MetricTestCase
         }
 
         $result->assertSessionHas("metrics.utm_fields", $utmFields);
+    }
+
+    /** @test */
+    public function we_attach_utm_session_values_to_an_action()
+    {
+        Route::get('/', [
+            'as' => 'home',
+            'uses' => function() {
+                return 'ok';
+            }
+        ]);
+
+        $this->get(route("home", ["utm_source" => "source"]));
+
+        $manager = $this->app->make(Manager::class);
+        $manager->action(new AcmeWithUtmFieldsAction('test'));
+
+        $this->assertEquals("source", $manager->visit()->actions()[0]->utmFields["utm_source"]);
     }
 }

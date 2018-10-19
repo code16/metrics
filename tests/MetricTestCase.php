@@ -10,7 +10,8 @@ use Code16\Metrics\Visit;
 use Code16\Metrics\TimeInterval;
 use Code16\Metrics\Repositories\VisitRepository;
 use Illuminate\Contracts\Http\Kernel;
-use Illuminate\Session\Middleware\StartSession; 
+use Illuminate\Foundation\Testing\TestResponse;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Eloquent\Model;
@@ -302,8 +303,9 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
 
     /**
      * Alias to Get
-     * 
-     * @return void
+     *
+     * @param string $url
+     * @return TestResponse
      */
     protected function visit($url)
     {
