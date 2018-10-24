@@ -15,6 +15,7 @@ use Code16\Metrics\Repositories\MetricRepository;
 use Code16\Metrics\Repositories\VisitRepository;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -61,9 +62,9 @@ class MetricServiceProvider extends ServiceProvider {
         });
 
         if($this->app['config']->get('metrics.enable')) {
-            $this->app[\Illuminate\Contracts\Http\Kernel::class]->prependMiddleware(MetricMiddleware::class);
-            $this->app[\Illuminate\Contracts\Http\Kernel::class]->pushMiddleware(StoreMetricMiddleware::class);
-            $this->app[\Illuminate\Contracts\Http\Kernel::class]->pushMiddleware(SetCookieMiddleware::class);
+            $this->app[Kernel::class]->prependMiddleware(MetricMiddleware::class);
+            $this->app[Kernel::class]->pushMiddleware(StoreMetricMiddleware::class);
+            $this->app[Kernel::class]->pushMiddleware(SetCookieMiddleware::class);
         }
 
         $router = $this->app['router'];

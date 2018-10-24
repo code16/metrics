@@ -2,25 +2,19 @@
 
 namespace Code16\Metrics\Tests;
 
-use Code16\Metrics\Tests\Stubs\User;
 use Carbon\Carbon;
-use Faker\Factory;
-use Code16\Metrics\Metric;
-use Code16\Metrics\Visit;
-use Code16\Metrics\TimeInterval;
-use Code16\Metrics\Repositories\VisitRepository;
-use Illuminate\Contracts\Http\Kernel;
-use Illuminate\Foundation\Testing\TestResponse;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factory as EloquentFactory;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Collection;
-use Code16\Metrics\Repositories\Eloquent\VisitModel;
-use Code16\Metrics\Contracts\AnalyzerInterface;
 use Code16\Metrics\Compiler;
+use Code16\Metrics\Contracts\AnalyzerInterface;
+use Code16\Metrics\Metric;
+use Code16\Metrics\MetricServiceProvider;
+use Code16\Metrics\Repositories\Eloquent\VisitModel;
+use Code16\Metrics\Repositories\VisitRepository;
+use Code16\Metrics\Tests\Stubs\User;
+use Code16\Metrics\TimeInterval;
+use Code16\Metrics\Visit;
+use Faker\Factory;
+use Illuminate\Foundation\Testing\TestResponse;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
@@ -44,25 +38,29 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
      * @return void
      */
     protected function getEnvironmentSetUp($app)
-    {       
-        $app['config']->set('app.debug', true);  
+    {
+        $app['config']->set('app.debug', true);
         $app['config']->set('mail.driver', 'log'); 
         $app['config']->set('session.driver', 'array'); 
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite.database', ':memory:');
         $app['config']->set('metrics.logging', true);
         $app['config']->set('auth.providers.users.model', User::class);
-        //$this->migrateDatabase();
-        //$this->artisan('migrate', ['--force' => 'default']);
-        //$this->app[Kernel::class]->setArtisan(null);
-        
+
         $this->addLoginRoute($app);
     }
 
     protected function getPackageProviders($app)
     {
+        // We HAVE to set the config before calling the MetricsServiceProvider,
+        // since Manager is a singleton (bad bad pattern) and is calling config
+        $app['config']->set(
+            'metrics',
+            require __DIR__.'/../src/config/config.php'
+        );
+
         return [
-            \Code16\Metrics\MetricServiceProvider::class,
+            MetricServiceProvider::class,
         ];
     }
 
@@ -75,7 +73,7 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
     {
         $router = $app->make('router');
         $router->post('auth', function(\Illuminate\Http\Request $request) {
-            $result = Auth::attempt([
+            Auth::attempt([
                 'email' => $request->email,
                 'password' => $request->password,
             ]);

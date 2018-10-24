@@ -2,14 +2,9 @@
 
 namespace Code16\Metrics\Tests;
 
-use Mockery;
-use Code16\Metrics\Tests\Stubs\AcmeAction;
-use Code16\Metrics\Tests\Stubs\AcmeProvider;
 use Code16\Metrics\Manager;
-use Code16\Metrics\Visit;
-use Code16\Metrics\Repositories\Eloquent\VisitModel;
-use Illuminate\Auth\Events\Login;
 use Code16\Metrics\TimeMachine;
+use Mockery;
 
 class AnonymousTrackingTest extends MetricTestCase
 {
@@ -21,13 +16,11 @@ class AnonymousTrackingTest extends MetricTestCase
 
         $this->app['config']->set('app.cipher', 'AES-256-CBC');
         $this->app['config']->set('app.key', str_random(32));
-        
     }
 
     /** @test */
     public function we_set_an_anonymous_cookie_if_set_anonymous_is_called_during_the_request()
     {
-
         $manager = $this->app->make(Manager::class);
 
         $router = $this->app->make('router');
