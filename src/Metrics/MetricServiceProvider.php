@@ -3,19 +3,19 @@
 use Code16\Metrics\Console\AnonymizeCommand;
 use Code16\Metrics\Console\MigrateCommand;
 use Code16\Metrics\Console\UpdateCommand;
-use Illuminate\Support\ServiceProvider;
-use Code16\Metrics\Middleware\MetricMiddleware;
-use Code16\Metrics\Repositories\VisitRepository;
-use Code16\Metrics\Repositories\MetricRepository;
-use Code16\Metrics\Middleware\SetCookieMiddleware;
-use Code16\Metrics\Middleware\NoTrackingMiddleware;
-use Code16\Metrics\Middleware\StoreMetricMiddleware;
-use Code16\Metrics\Repositories\Eloquent\VisitEloquentRepository;
-use Code16\Metrics\Repositories\Eloquent\MetricEloquentRepository;
 use Code16\Metrics\Listeners\LoginListener;
 use Code16\Metrics\Listeners\LogoutListener;
+use Code16\Metrics\Middleware\MetricMiddleware;
+use Code16\Metrics\Middleware\NoTrackingMiddleware;
+use Code16\Metrics\Middleware\SetCookieMiddleware;
+use Code16\Metrics\Middleware\StoreMetricMiddleware;
+use Code16\Metrics\Repositories\Eloquent\MetricEloquentRepository;
+use Code16\Metrics\Repositories\Eloquent\VisitEloquentRepository;
+use Code16\Metrics\Repositories\MetricRepository;
+use Code16\Metrics\Repositories\VisitRepository;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
+use Illuminate\Support\ServiceProvider;
 
 /**
  * A Laravel 5's package template.
@@ -53,8 +53,6 @@ class MetricServiceProvider extends ServiceProvider {
      */
     public function register()
     {
-        $this->mergeConfigFrom( __DIR__.'/../config/config.php', $this->packageName);
-
         $this->app->bind(MetricRepository::class, MetricEloquentRepository::class);
         $this->app->bind(VisitRepository::class, VisitEloquentRepository::class);
 
