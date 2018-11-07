@@ -45,6 +45,10 @@ class StoreMetricMiddleware
 
     public function terminate($request, $response)
     {
+        if(! config('metrics.enable')) {
+            return;
+        }
+
         $visit = $this->metricManager->visit();
 
         // We'll add the status code there, making sure that response status isn't modified
@@ -64,6 +68,5 @@ class StoreMetricMiddleware
             
             $this->visits->store($this->metricManager->visit());    
         }
-        
     }
 }

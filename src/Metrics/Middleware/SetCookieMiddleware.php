@@ -36,6 +36,10 @@ class SetCookieMiddleware
     {
         $response = $next($request);
 
+        if(! config('metrics.enable')) {
+            return $response;
+        }
+
         if($this->metricManager->hasPlaceDntCookie() || !$this->metricManager->isRequestTracked()) {
             $this->doNotTrack($response);
 

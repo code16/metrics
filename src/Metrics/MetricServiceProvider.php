@@ -61,11 +61,9 @@ class MetricServiceProvider extends ServiceProvider {
             return new Manager($app);
         });
 
-        if($this->app['config']->get('metrics.enable')) {
-            $this->app[Kernel::class]->prependMiddleware(MetricMiddleware::class);
-            $this->app[Kernel::class]->pushMiddleware(StoreMetricMiddleware::class);
-            $this->app[Kernel::class]->pushMiddleware(SetCookieMiddleware::class);
-        }
+        $this->app[Kernel::class]->prependMiddleware(MetricMiddleware::class);
+        $this->app[Kernel::class]->pushMiddleware(StoreMetricMiddleware::class);
+        $this->app[Kernel::class]->pushMiddleware(SetCookieMiddleware::class);
 
         $router = $this->app['router'];
         $router->middleware('no_tracking', NoTrackingMiddleware::class);

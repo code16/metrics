@@ -3,7 +3,6 @@
 namespace Code16\Metrics\Middleware;
 
 use Closure;
-use Code16\Metrics\Visit;
 use Code16\Metrics\Manager;
 use Code16\Metrics\VisitCreator;
 
@@ -34,6 +33,10 @@ class MetricMiddleware
      */
     public function handle($request, Closure $next)
     {
+        if(! config('metrics.enable')) {
+            return $next($request);
+        }
+
         // First we'll create the visit object, whether it will be used or not,
         // as this will prevent other part of the package to fails.
         $visit = $this->visitCreator->createFromRequest($request);
