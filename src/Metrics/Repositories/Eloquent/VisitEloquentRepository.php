@@ -261,6 +261,19 @@ class VisitEloquentRepository implements VisitRepository
     }
 
     /**
+     * Anonymize visits (remove user_id) until given date
+     *
+     * @param  Carbon $until
+     * @return void
+     */
+    public function deleteUntil(Carbon $until)
+    {
+        $this->getQueryBuilder()
+            ->where('date', '<', $until)
+            ->delete();
+    }
+
+    /**
      * Store in database 
      * 
      * @param  Visit  $visit
