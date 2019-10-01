@@ -27,7 +27,11 @@ class MetricEloquentRepository implements MetricRepository
      */
     public function all()
     {
-        return $this->convertCollection($this->metric->all());
+        return $this->convertCollection(
+            $this->metric
+                ->orderBy('start','asc')
+                ->get()
+        );
     }
 
     /**
@@ -88,7 +92,9 @@ class MetricEloquentRepository implements MetricRepository
     public function getTimeInterval(TimeInterval $interval)
     {
         $metrics = $this->metric
-            ->where('start', '>=', $interval->start())->where('end', '<', $interval->end())
+            ->where('start', '>=', $interval->start())
+            ->where('end', '<', $interval->end())
+            ->orderBy('start','asc')
             ->get();
         
         return $this->convertCollection($metrics);
@@ -105,7 +111,9 @@ class MetricEloquentRepository implements MetricRepository
     {
         $metrics = $this->metric->whereType($type)
             ->where('start', '>=', $interval->start())
-            ->where('end', '<=', $interval->end())->get();
+            ->where('end', '<=', $interval->end())
+            ->orderBy('start','asc')
+            ->get();
         
         return $this->convertCollection($metrics);
     }
