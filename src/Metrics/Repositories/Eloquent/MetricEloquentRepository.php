@@ -30,7 +30,7 @@ class MetricEloquentRepository implements MetricRepository
         return $this->convertCollection(
             $this->metric
                 ->orderBy('start','asc')
-                ->all()
+                ->get()
         );
     }
 
