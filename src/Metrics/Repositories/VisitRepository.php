@@ -34,5 +34,7 @@ interface VisitRepository {
 
     public function anonymizeUntil(Carbon $until);
 
+    public function deleteUntil(Carbon $until);
+
     public function updateSessionId($cookie, $sessionId, Carbon $from, Carbon $to);
 }

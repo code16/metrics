@@ -1,6 +1,7 @@
 <?php namespace Code16\Metrics;
 
 use Code16\Metrics\Console\AnonymizeCommand;
+use Code16\Metrics\Console\CleanVisitsCommand;
 use Code16\Metrics\Console\MigrateCommand;
 use Code16\Metrics\Console\UpdateCommand;
 use Code16\Metrics\Listeners\LoginListener;
@@ -74,6 +75,7 @@ class MetricServiceProvider extends ServiceProvider {
             UpdateCommand::class,
             MigrateCommand::class,
             AnonymizeCommand::class,
+            CleanVisitsCommand::class,
         ]);
     }
 

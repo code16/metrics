@@ -100,7 +100,7 @@ return [
     | database. It has to be greater or equal to the smallest analyzer period. 
     |
     */
-    'visits_retention_time' => '1 month',
+    'visits_retention_time' => env('METRICS_VISITS_RETENTION_TIME', '1 month'),
     
     /*
     |--------------------------------------------------------------------------

@@ -99,11 +99,10 @@ class UpdaterTest extends MetricTestCase
     /** @test */
     public function all_metrics_are_created_for_last_day_if_we_have_visits_in_every_hours()
     {
+        Carbon::setTestNow(Carbon::createFromDate(2019,9,28));
         $interval = $this->getLastDay();
         $this->createVisitsInEveryTimeInterval($interval, 1);
         $this->updater->update();
-        // TODO : this assertion fails if we do our test on the 1st day of the month
-        // as the updater will calculate the month consolider as well
         $this->assertCount(25, $this->repository->all());
     }
 
