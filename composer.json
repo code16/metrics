@@ -47,6 +47,9 @@
             ]
         }
     },
+    "config": {
+        "discard-changes": true
+    },
     "license": "MIT"
     
 }
