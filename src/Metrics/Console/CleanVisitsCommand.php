@@ -46,7 +46,7 @@ class CleanVisitsCommand extends Command
      */
     public function handle()
     {
-        $this->visits->cleanUntil(
+        $this->visits->deleteUntil(
             Carbon::now()->sub(
                 DateInterval::createFromDateString(config('metrics.visits_retention_time'))
             )
