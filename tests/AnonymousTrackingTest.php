@@ -23,10 +23,12 @@ class AnonymousTrackingTest extends MetricTestCase
     {
         $manager = $this->app->make(Manager::class);
 
-        $router = $this->app->make('router');
-        $router->get('anonymous', function(Manager $manager) {
-            $manager->setAnonymous();
-        });
+        $this->app->make('router')
+            ->get('anonymous', function(Manager $manager) {
+                $manager->setAnonymous();
+            })
+            ->middleware("web");
+
         $response = $this->visit("anonymous");
         $this->assertTrue($manager->visit()->isAnonymous());
         $response->assertCookie($this->app['config']->get('metrics.anonymous_cookie_name'));
@@ -36,11 +38,15 @@ class AnonymousTrackingTest extends MetricTestCase
     public function we_set_an_non_anonymous_cookie_if_set_anonymous_is_called_with_falseduring_the_request()
     {
         $manager = $this->app->make(Manager::class);
-        $router = $this->app->make('router');
-        $router->get('anonymous', function(Manager $manager) {
-            $manager->setAnonymous(false);
-        });
+
+        $this->app->make('router')
+            ->get('anonymous', function(Manager $manager) {
+                $manager->setAnonymous(false);
+            })
+            ->middleware("web");
+
         $response = $this->visit("/anonymous");
+
         $this->assertFalse($manager->visit()->isAnonymous());
         $response->asserTCookie($this->app['config']->get('metrics.cookie_name'));
     }
@@ -50,10 +56,12 @@ class AnonymousTrackingTest extends MetricTestCase
     {
         $manager = $this->app->make(Manager::class);
 
-        $router = $this->app->make('router');
-        $router->get('anonymous', function(Manager $manager) {
-            $manager->setAnonymous();
-        });
+        $this->app->make('router')
+            ->get('anonymous', function(Manager $manager) {
+                $manager->setAnonymous();
+            })
+            ->middleware("web");
+
         $cookieName = $this->app['config']->get('metrics.cookie_name');
         $cookies = [
             $cookieName => str_random(32),
@@ -76,10 +84,12 @@ class AnonymousTrackingTest extends MetricTestCase
     {
         $manager = $this->app->make(Manager::class);
 
-        $router = $this->app->make('router');
-        $router->get('anonymous', function(Manager $manager) {
-            $manager->setAnonymous(false);
-        });
+        $this->app->make('router')
+            ->get('anonymous', function(Manager $manager) {
+                $manager->setAnonymous(false);
+            })
+            ->middleware("web");
+
         $cookieName = $this->app['config']->get('metrics.anonymous_cookie_name');
         $cookies = [
             $cookieName => str_random(32),

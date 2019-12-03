@@ -63,11 +63,10 @@ class MetricServiceProvider extends ServiceProvider {
         });
 
         $this->app[Kernel::class]->prependMiddleware(MetricMiddleware::class);
-        $this->app[Kernel::class]->pushMiddleware(StoreMetricMiddleware::class);
-        $this->app[Kernel::class]->pushMiddleware(SetCookieMiddleware::class);
 
-        $router = $this->app['router'];
-        $router->middleware('no_tracking', NoTrackingMiddleware::class);
+        $this->app['router']->pushMiddlewareToGroup("web", StoreMetricMiddleware::class);
+        $this->app['router']->pushMiddlewareToGroup("web", SetCookieMiddleware::class);
+        $this->app['router']->middleware('no_tracking', NoTrackingMiddleware::class);
 
         $this->registerListeners();
 

@@ -29,6 +29,12 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
 
         $this->loadLaravelMigrations(['--database' => 'sqlite']);
         $this->artisan('migrate');
+
+        $this->app->make('router')
+            ->get('', function() {
+                return "";
+            })
+            ->middleware("web");
     }
 
     /**
@@ -71,13 +77,14 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
      */
     protected function addLoginRoute($app)
     {
-        $router = $app->make('router');
-        $router->post('auth', function(\Illuminate\Http\Request $request) {
-            Auth::attempt([
-                'email' => $request->email,
-                'password' => $request->password,
-            ]);
-        });
+        $app->make('router')
+            ->post('auth', function() {
+                Auth::attempt([
+                    'email' => request()->email,
+                    'password' => request()->password,
+                ]);
+            })
+            ->middleware("web");
     }
 
     // Generate fake visits we can parse for metrics
