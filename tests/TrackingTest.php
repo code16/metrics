@@ -10,7 +10,6 @@ use Code16\Metrics\Tests\Stubs\AcmeProvider;
 use Code16\Metrics\Tests\Stubs\AcmeWithUtmFieldsAction;
 use Code16\Metrics\TimeMachine;
 use Code16\Metrics\Visit;
-use Illuminate\Support\Facades\Route;
 use Mockery;
 
 class TrackingTest extends MetricTestCase
@@ -49,13 +48,17 @@ class TrackingTest extends MetricTestCase
     public function we_log_a_visit_if_tracking_is_manually_during_request()
     {
         $this->app['config']->set('metrics.auto_place_cookie', false);
-        $router = $this->app->make('router');
-        $router->get('log', function(Manager $manager) {
-            $manager->setTrackingOn();
-        });
+
+        $this->app->make('router')
+            ->get('log', function(Manager $manager) {
+                $manager->setTrackingOn();
+            })
+            ->middleware("web");
+
         $response = $this->visit('/log');
         $manager = $this->app->make(Manager::class);
         $visit = $manager->visit();
+
         $this->assertNotNull($visit);
         $this->assertTrue($manager->isRequestTracked());
         $response->assertCookie($this->app['config']->get('metrics.cookie_name'));
@@ -201,39 +204,57 @@ class TrackingTest extends MetricTestCase
             'admin*',
             'backend/somepage',
         ]);
-        
-        $router = $this->app->make('router');
-        $router->get('admin', function() {
-            return response();
-        });
-        
-        $router->get('admin/articles', function() {
-            return response();
-        });
+
+        $this->app->make('router')
+            ->get('admin', function() {
+                return response();
+            })
+            ->middleware("web");
+
+        $this->app->make('router')
+            ->get('admin/articles', function() {
+                return response();
+            })
+            ->middleware("web");
+
+        $this->app->make('router')
+            ->get('backend/somepage', function() {
+                return response();
+            })
+            ->middleware("web");
+
+        $this->app->make('router')
+            ->get('backend/somepage/subpage', function() {
+                return response();
+            })
+            ->middleware("web");
 
         // Query url and sub url and check it's not logged
-        $result = $this->get('/admin/asokoas/askosa');
+        $this->get('/admin/asokoas/askosa');
         $this->assertEquals(0, VisitModel::count());
 
-        $result = $this->get('/admin');
+        $this->get('/admin');
         $this->assertEquals(0, VisitModel::count());
 
-        $result = $this->get('backend/somepage');
+        $this->get('backend/somepage');
         $this->assertEquals(0, VisitModel::count());
 
-        $result = $this->get('backend/somepage/subpage');
+        $this->get('backend/somepage/subpage');
         $this->assertEquals(1, VisitModel::count());
     }
 
     /** @test */
     public function we_can_track_request_that_send_json_responses()
     {
-        $router = $this->app->make('router');
-        $router->get('json', function() {
-            return response()->json(['test' => 'test']);
-        });
-        $result = $this->get('/json');
-        $result->assertStatus(200);
+        $this->app->make('router')
+            ->get('json', function() {
+                return response()->json(['test' => 'test']);
+            })
+            ->middleware("web");
+
+        $this->get('/json')
+            ->assertStatus(200);
+
         $this->assertEquals(1, VisitModel::count());
     }
 
@@ -285,10 +306,11 @@ class TrackingTest extends MetricTestCase
             return $visit->getStatusCode() != '200';
         });
 
-        $router = $this->app->make('router');
-        $router->get('some_url', function() {
-            return 'ok';
-        });
+        $this->app->make('router')
+            ->get('some_url', function() {
+                return 'ok';
+            })
+            ->middleware("web");
 
         // Query an url that will trigger a 404
         $this->get('/some_non_existing_url');
@@ -302,12 +324,12 @@ class TrackingTest extends MetricTestCase
     /** @test */
     public function it_adds_utm_fields_to_custom_fields_if_set()
     {
-        Route::get('/', [
-            'as' => 'home',
-            'uses' => function() {
+        $this->app->make('router')
+            ->get('/home', function() {
                 return 'ok';
-            }
-        ]);
+            })
+            ->name("home")
+            ->middleware("web");
 
         $utmFields = [
             "utm_source" => "source",
@@ -317,8 +339,8 @@ class TrackingTest extends MetricTestCase
             "utm_term" => "term"
         ];
 
-        $result = $this->get(route("home", $utmFields));
-        $result->assertStatus(200);
+        $result = $this->get(route("home", $utmFields))
+            ->assertStatus(200);
 
         $visit = app(VisitRepository::class)->first();
 
@@ -332,12 +354,12 @@ class TrackingTest extends MetricTestCase
     /** @test */
     public function we_attach_utm_session_values_to_an_action()
     {
-        Route::get('/', [
-            'as' => 'home',
-            'uses' => function() {
+        $this->app->make('router')
+            ->get('/home', function() {
                 return 'ok';
-            }
-        ]);
+            })
+            ->name("home")
+            ->middleware("web");
 
         $this->get(route("home", ["utm_source" => "source"]));
 
