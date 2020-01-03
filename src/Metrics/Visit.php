@@ -5,6 +5,7 @@ namespace Code16\Metrics;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Str;
 
 class Visit implements Arrayable
 {
@@ -229,7 +230,7 @@ class Visit implements Arrayable
      */
     public function setCookie($cookie = null)
     {
-        $this->cookie = $cookie ?: str_random(32);
+        $this->cookie = $cookie ?: Str::random(32);
     }
 
     /**

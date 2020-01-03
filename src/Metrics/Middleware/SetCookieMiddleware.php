@@ -6,6 +6,7 @@ use Closure;
 use Code16\Metrics\Manager;
 use Code16\Metrics\VisitCreator;
 use DateInterval;
+use Illuminate\Support\Str;
 
 class SetCookieMiddleware
 {
@@ -58,7 +59,7 @@ class SetCookieMiddleware
             $visit->setSessionId(session()->get('metrics_session_id'));
         }
         else {
-            $sessionId = str_random(16);
+            $sessionId = Str::random(16);
             $visit->setSessionId($sessionId);
             session()->put('metrics_session_id', $sessionId);
         }
