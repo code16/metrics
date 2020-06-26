@@ -2,17 +2,15 @@
 
 namespace Code16\Metrics\Tests;
 
-use Illuminate\Support\Collection;
-use Code16\Metrics\Metric;
-use Code16\Metrics\TimeInterval;
-use Code16\Metrics\Repositories\VisitRepository;
 use Code16\Metrics\Analyzers\UniqueVisitorAnalyzer;
+use Code16\Metrics\Metric;
+use Code16\Metrics\Repositories\VisitRepository;
 
 class UniqueVisitorAnalyzerTest extends MetricTestCase
 {
     protected $visits;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->visits = $this->app->make(VisitRepository::class);

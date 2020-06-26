@@ -3,7 +3,6 @@
 namespace Code16\Metrics\Tests;
 
 use Carbon\Carbon;
-use Code16\Metrics\TimeInterval;
 use Code16\Metrics\Repositories\Eloquent\VisitModel;
 use Code16\Metrics\Visit;
 
@@ -11,7 +10,7 @@ class VisitRepositoryTest extends MetricTestCase
 {
     protected $repository;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->repository = $this->app->make(\Code16\Metrics\Repositories\VisitRepository::class);

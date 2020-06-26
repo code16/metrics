@@ -4,18 +4,19 @@ namespace Code16\Metrics\Tests;
 
 use Code16\Metrics\Manager;
 use Code16\Metrics\TimeMachine;
+use Illuminate\Support\Str;
 use Mockery;
 
 class AnonymousTrackingTest extends MetricTestCase
 {
     protected $baseUrl = '/';
 
-    public function setUp() 
+    public function setUp(): void
     {
         parent::setUp();
 
         $this->app['config']->set('app.cipher', 'AES-256-CBC');
-        $this->app['config']->set('app.key', str_random(32));
+        $this->app['config']->set('app.key', Str::random(32));
     }
 
     /** @test */
@@ -64,7 +65,7 @@ class AnonymousTrackingTest extends MetricTestCase
 
         $cookieName = $this->app['config']->get('metrics.cookie_name');
         $cookies = [
-            $cookieName => str_random(32),
+            $cookieName => Str::random(32),
         ];
         $result = $this->call('GET', '/anonymous', [], $cookies);
         $this->assertTrue($manager->visit()->isAnonymous());
@@ -92,7 +93,7 @@ class AnonymousTrackingTest extends MetricTestCase
 
         $cookieName = $this->app['config']->get('metrics.anonymous_cookie_name');
         $cookies = [
-            $cookieName => str_random(32),
+            $cookieName => Str::random(32),
         ];
         $result = $this->call('GET', 'anonymous', [], $cookies);
         $this->assertFalse($manager->visit()->isAnonymous());
@@ -122,7 +123,7 @@ class AnonymousTrackingTest extends MetricTestCase
         $anonymousCookieName = $this->app['config']->get('metrics.anonymous_cookie_name');
 
         $cookies = [
-            $anonymousCookieName => str_random(32),
+            $anonymousCookieName => Str::random(32),
         ];
 
         $result = $this->call('POST', 'auth', $data, $cookies);

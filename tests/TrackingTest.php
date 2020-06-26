@@ -10,17 +10,18 @@ use Code16\Metrics\Tests\Stubs\AcmeProvider;
 use Code16\Metrics\Tests\Stubs\AcmeWithUtmFieldsAction;
 use Code16\Metrics\TimeMachine;
 use Code16\Metrics\Visit;
+use Illuminate\Support\Str;
 use Mockery;
 
 class TrackingTest extends MetricTestCase
 {
     protected $baseUrl = '/';
 
-    public function setUp() 
+    public function setUp(): void
     {
         parent::setUp();
         $this->app['config']->set('app.cipher', 'AES-256-CBC');
-        $this->app['config']->set('app.key', str_random(32));
+        $this->app['config']->set('app.key', Str::random(32));
     }
 
     public function test_has_cookie_helper()
@@ -73,7 +74,7 @@ class TrackingTest extends MetricTestCase
         $this->app['config']->set('metrics.auto_place_cookie', false);
         $cookieName = $this->app['config']->get('metrics.cookie_name');
         $cookies = [
-            $cookieName => str_random(32),
+            $cookieName => Str::random(32),
         ];
         $result = $this->call('GET', '/', [], $cookies);
         $manager = $this->app->make(Manager::class);
@@ -90,7 +91,7 @@ class TrackingTest extends MetricTestCase
         $this->app['config']->set('metrics.auto_place_cookie', false);
         $cookieName = $this->app['config']->get('metrics.anonymous_cookie_name');
         $cookies = [
-            $cookieName => str_random(32),
+            $cookieName => Str::random(32),
         ];
         $result = $this->call('GET', '/', [], $cookies);
         $manager = $this->app->make(Manager::class);

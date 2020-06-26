@@ -21,7 +21,7 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
 {
     protected $faker;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->faker = Factory::create();
         

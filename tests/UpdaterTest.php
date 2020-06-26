@@ -3,14 +3,12 @@
 namespace Code16\Metrics\Tests;
 
 use Carbon\Carbon;
-use Code16\Metrics\Metric;
-use Code16\Metrics\Updater;
-use Code16\Metrics\Manager;
-use Code16\Metrics\TimeInterval;
-use Code16\Metrics\Repositories\MetricRepository;
-use Code16\Metrics\Repositories\Eloquent\MetricModel;
-use Code16\Metrics\Repositories\Eloquent\VisitModel;
 use Code16\Metrics\Analyzers\UniqueVisitorAnalyzer;
+use Code16\Metrics\Manager;
+use Code16\Metrics\Metric;
+use Code16\Metrics\Repositories\Eloquent\VisitModel;
+use Code16\Metrics\Repositories\MetricRepository;
+use Code16\Metrics\TimeInterval;
 use Illuminate\Support\Collection;
 
 class UpdaterTest extends MetricTestCase 
@@ -19,7 +17,7 @@ class UpdaterTest extends MetricTestCase
 
     protected $repository;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->updater = $this->app->make(Manager::class)->getUpdater();
@@ -32,12 +30,11 @@ class UpdaterTest extends MetricTestCase
         $this->createVisits(1000, '-1 year');
         $expectedStart = Carbon::now()->subYear()->startOfYear();
         $result = $this->updater->getPeriodStart();
-        $this->assertEquals($expectedStart,$result);
+        $this->assertEquals($expectedStart->timestamp, $result->timestamp);
 
         $expectedEnd = Carbon::now()->subHour()->minute(59)->second(59);
         $result = $this->updater->getPeriodEnd();
-        $this->assertEquals($expectedEnd,$result);
-
+        $this->assertEquals($expectedEnd->timestamp, $result->timestamp);
     } 
 
     /** @test */
