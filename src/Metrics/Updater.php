@@ -6,11 +6,10 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Code16\Metrics\Repositories\MetricRepository;
 use Code16\Metrics\Repositories\VisitRepository;
-use Code16\WriteToConsole\WriteToConsole;
+use Illuminate\Support\Facades\Log;
 
-class Updater 
+class Updater
 {
-    use WriteToConsole;
 
     /**
      * @var MetricRepository
@@ -49,7 +48,7 @@ class Updater
     /**
      * Update the metrics. Return true if update has been processed,
      * false if there is no data to process.
-     * 
+     *
      * @return boolean
      */
     public function update()
@@ -66,23 +65,23 @@ class Updater
 
     /**
      * Process update operation
-     * 
-     * @param  Carbon $start 
+     *
+     * @param  Carbon $start
      * @param  Carbon $end
      * @return boolean
      */
     protected function processUpdate(Carbon $start, Carbon $end)
     {
-        $this->info('Analyzing Visits...');
+        Log::info('Analyzing Visits...');
 
-        // First, we'll get the complete period in the timeframe, with only the 
+        // First, we'll get the complete period in the timeframe, with only the
         // top level periods (meaning we'll only have the Year TimeInterval of a complete
         // year, not the month TimeInterval the years is composed)
         $completePeriods = $this->getCompletePeriods($start, $end);
 
         // Then, we'll pipe them to a method that will recursively check into complete
         // periods to find potentially missing smaller units. If a larger unit is present,
-        // it will assume the smaller units are present as well. 
+        // it will assume the smaller units are present as well.
         $missingPeriods = new Collection($this->parseForMissingMetrics($completePeriods));
 
         if($missingPeriods) {
@@ -94,13 +93,13 @@ class Updater
             foreach ($sortedPeriods as $period) {
                 // Process will return false if there was no data to handle in a given period.
                 $metric = $this->process($period);
-                
+
                 if($metric) {
                     $this->metrics->store($metric);
-                    $this->info("Analyzed & Stored : $metric");
+                    Log::info("Analyzed & Stored : $metric");
 
                 } else {
-                    $this->warning("No data for period : $period");
+                    Log::warning("No data for period : $period");
                 }
             }
 
@@ -112,8 +111,8 @@ class Updater
 
     /**
      * Process  a metric for a given period
-     * 
-     * @param  TimeInterval $period 
+     *
+     * @param  TimeInterval $period
      * @return  Metric|null
      */
     protected function process(TimeInterval $period)
@@ -127,9 +126,9 @@ class Updater
 
     /**
      * Check if analyzers are present for a given period
-     * 
+     *
      * @param  integer  $periodType
-     * @return boolean             
+     * @return boolean
      */
     protected function hasAnalyzers($periodType)
     {
@@ -138,16 +137,16 @@ class Updater
 
     /**
      * Process Analyze and output a metric
-     * 
+     *
      * @param  TimeInterval $period
      * @return Metric
      */
     protected function processAnalyze(TimeInterval $period)
     {
         // Check if there are analyzers setUp for a given period, if not
-        // we'll don't waste memory by just initializing an empty Metric 
+        // we'll don't waste memory by just initializing an empty Metric
         // instance, and pass it over to consolidate
-        
+
         if($this->hasAnalyzers($period->type())) {
             $compiler = new Compiler($this->analyzers[$period->type()]);
             $visits = $this->visits->getTimeInterval($period->start(), $period->end());
@@ -187,18 +186,18 @@ class Updater
     }
 
     /**
-     * Parse for metrics that are not in DB for a Period. 
-     * 
+     * Parse for metrics that are not in DB for a Period.
+     *
      * @param array $periods
      * @return Collection
      */
     public function parseForMissingMetrics($periods)
     {
         $missingMetrics = [];
-        
+
         foreach($periods as $period) {
             if(! $this->metrics->has($period)) {
-                
+
                 // We'll check that there are visits in that period
                 // so we don't divide into smaller units if there
                 // are no visits in the first place.
@@ -218,9 +217,9 @@ class Updater
 
     /**
      * Return the completed years, months, day, hours
-     * 
-     * @param  Carbon $start 
-     * @param  Carbon $end  
+     *
+     * @param  Carbon $start
+     * @param  Carbon $end
      * @return  Collection
      */
     public function getCompletePeriods(Carbon $start, Carbon $end)
@@ -234,16 +233,16 @@ class Updater
         $periods = array_merge($periods, $this->getCompletePeriodsByType($start, $end, Metric::DAILY));
         $start = $end->copy()->startOfDay();
         $periods = array_merge($periods, $this->getCompletePeriodsByType($start, $end, Metric::HOURLY));
-        
+
         return new Collection($periods);
     }
 
     /**
      * Get top-level complete periods for the given $start & $end
-     * 
+     *
      * @param  Carbon $start
-     * @param  Carbon $end  
-     * @param  integer $type  
+     * @param  Carbon $end
+     * @param  integer $type
      * @return  array
      */
     protected function getCompletePeriodsByType(Carbon $start, Carbon $end, $type)
@@ -261,7 +260,7 @@ class Updater
             case Metric::HOURLY:
                 $diff = $end->diffInHours($start);
         }
-       
+
         $intervals = [];
 
         for($x = 0; $x < $diff; $x++) {
@@ -283,8 +282,8 @@ class Updater
                     $intervalStart = $start->copy()->addHours($x)->minute(0)->second(0);
                     $intervalEnd = $intervalStart->copy()->minute(59)->second(59);
             }
-            
-            $intervals[] = new TimeInterval($intervalStart, $intervalEnd, $type);    
+
+            $intervals[] = new TimeInterval($intervalStart, $intervalEnd, $type);
         }
 
         return $intervals;
@@ -292,13 +291,13 @@ class Updater
 
     /**
      * Get the start date for the Metric processing period
-     * 
+     *
      * @return Carbon
      */
     public function getPeriodStart()
     {
         // First we'll check if metrics exists, and if so we'll make the first metric in time
-        // the start of our reference period. 
+        // the start of our reference period.
         if($firstMetric = $this->metrics->first()) {
             $start = $firstMetric->getStart();
 
@@ -314,7 +313,7 @@ class Updater
     /**
      * Get the end of the processing period, which will be always the end of the last
      * hour.
-     * 
+     *
      * @return Carbon
      */
     public function getPeriodEnd()
