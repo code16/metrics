@@ -298,13 +298,10 @@ class Updater
     {
         // First we'll check if metrics exists, and if so we'll make the first metric in time
         // the start of our reference period.
-        if($firstMetric = $this->metrics->first()) {
-            $start = $firstMetric->getStart();
-
-            return $start->startOfYear();
-
-        } elseif($start = $this->visits->first()) {
-            return $start->getDate()->startOfYear();
+        if($firstMetricStart = $this->metrics->getMinStart()) {
+            return $firstMetricStart->startOfYear();
+        } elseif($firstVisitDate = $this->visits->getMinDate()) {
+            return $firstVisitDate->startOfYear();
         }
 
         return null;

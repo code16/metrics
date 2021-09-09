@@ -51,12 +51,13 @@ class VisitRepositoryTest extends MetricTestCase
     }
 
     /** @test */
-    public function we_can_query_for_first_visit()
+    public function we_can_query_for_visit_min_date()
     {
+        $time = Carbon::now()->subDay()->startOfDay();
+
         $this->createVisits(23, '-1 hour');
-        $this->createVisits(1, '-1 hour', ['date' => Carbon::now()->subDay()->startOfDay()]);
-        $visit = $this->repository->first();
-        $this->assertEquals(Carbon::now()->subDay()->startOfDay(), $visit->getDate());
+        $this->createVisits(1, '-1 hour', ['date' => $time]);
+        $this->assertEquals($time, $this->repository->getMinDate());
     }
 
     /** @test */
@@ -95,7 +96,7 @@ class VisitRepositoryTest extends MetricTestCase
         $this->createVisits(3, '-1000 years', [
             'user_id' => 23,
         ]);
-    
+
         $this->repository->anonymizeUntil(Carbon::now()->subDays(1));
         $this->assertCount(2, $this->repository->visitsFromUser(23));
     }

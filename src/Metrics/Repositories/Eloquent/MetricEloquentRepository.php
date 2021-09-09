@@ -2,11 +2,13 @@
 
 namespace Code16\Metrics\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use Code16\Metrics\Metric;
 use Code16\Metrics\TimeInterval;
 use Code16\Metrics\Repositories\MetricRepository;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class MetricEloquentRepository implements MetricRepository
 {
@@ -22,7 +24,7 @@ class MetricEloquentRepository implements MetricRepository
 
     /**
      * Return all metric rows
-     * 
+     *
      * @return Collection
      */
     public function all()
@@ -53,11 +55,11 @@ class MetricEloquentRepository implements MetricRepository
         return null;
     }
 
-    /** 
+    /**
      * Check if a metric exists in DB
-     * 
+     *
      * @param  TimeInterval $interval
-     * @return boolean               
+     * @return boolean
      */
     public function has(TimeInterval $interval)
     {
@@ -70,14 +72,14 @@ class MetricEloquentRepository implements MetricRepository
     }
 
     /**
-     * Return first metric
-     * 
-     * @return Metric 
+     * Return first metric start
+     *
+     * @return Carbon | null
      */
-    public function first()
+    public function getMinStart()
     {
-        if($metric = $this->metric->orderBy('start', 'asc')->first()) {
-            return $this->toObject($metric);
+        if($result = DB::table("metric_metrics")->selectRaw("min(start) as min_start")->first()) {
+            return $result->min_start ? Carbon::parse($result->min_start) : null;
         }
 
         return null;
@@ -85,7 +87,7 @@ class MetricEloquentRepository implements MetricRepository
 
     /**
      * Return all the metric records for the given time interval
-     * 
+     *
      * @param  TimeInterval $interval
      * @return Collection
      */
@@ -96,13 +98,13 @@ class MetricEloquentRepository implements MetricRepository
             ->where('end', '<', $interval->end())
             ->orderBy('start','asc')
             ->get();
-        
+
         return $this->convertCollection($metrics);
     }
 
     /**
      * Return all the metric records for the given time interval & type
-     * 
+     *
      * @param  TimeInterval $interval
      * @param  integer  $type
      * @return Collection
@@ -114,27 +116,27 @@ class MetricEloquentRepository implements MetricRepository
             ->where('end', '<=', $interval->end())
             ->orderBy('start','asc')
             ->get();
-        
+
         return $this->convertCollection($metrics);
     }
 
     /**
      * Return true if a time interval exists
-     * 
-     * @param  TimeInterval $interval 
-     * @return boolean             
+     *
+     * @param  TimeInterval $interval
+     * @return boolean
      */
     public function hasTimeInterval(TimeInterval $interval)
     {
         $metric = $this->find($interval);
-        
+
         return $metric ? true : false;
     }
 
     /**
      * Store a Metric object
      *
-     * @param  Metric $metric 
+     * @param  Metric $metric
      */
     public function store(Metric $metric)
     {
@@ -150,7 +152,7 @@ class MetricEloquentRepository implements MetricRepository
     protected function convertCollection(EloquentCollection $collection)
     {
         $baseCollection = $collection->toBase();
-        
+
         return $baseCollection->transform(function ($item, $key) {
             return Metric::createFromArray($item->toArray() );
         });

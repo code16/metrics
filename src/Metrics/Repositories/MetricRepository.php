@@ -2,6 +2,7 @@
 
 namespace Code16\Metrics\Repositories;
 
+use Carbon\Carbon;
 use Code16\Metrics\Metric;
 use Code16\Metrics\TimeInterval;
 use Illuminate\Support\Collection;
@@ -11,7 +12,7 @@ interface MetricRepository {
 
     /**
      * Return all metric rows
-     * 
+     *
      * @return Collection
      */
     public function all();
@@ -24,24 +25,24 @@ interface MetricRepository {
      */
     public function find(TimeInterval $interval);
 
-    /** 
+    /**
      * Check if a metric exists in DB
-     * 
+     *
      * @param  TimeInterval $interval
-     * @return boolean               
+     * @return boolean
      */
     public function has(TimeInterval $interval);
-    
+
     /**
-     * Return first metric
-     * 
-     * @return Metric 
+     * Return first metric start
+     *
+     * @return Carbon | null
      */
-    public function first();
+    public function getMinStart();
 
     /**
      * Return all the metric records for the given time interval
-     * 
+     *
      * @param  TimeInterval $interval
      * @return Collection
      */
@@ -49,7 +50,7 @@ interface MetricRepository {
 
     /**
      * Return all the metric records for the given time interval & type
-     * 
+     *
      * @param  TimeInterval $interval
      * @param  integer  $type
      * @return Collection
@@ -58,15 +59,15 @@ interface MetricRepository {
 
     /**
      * Return true if a time interval exists
-     * 
-     * @param  TimeInterval $interval 
-     * @return boolean             
+     *
+     * @param  TimeInterval $interval
+     * @return boolean
      */
     public function hasTimeInterval(TimeInterval $interval);
 
     /**
      * Store a Metric object
-     * @param  Metric $metric 
+     * @param  Metric $metric
      * @return  void
      */
     public function store(Metric $metric);
