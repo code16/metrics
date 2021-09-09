@@ -8,7 +8,6 @@ use Code16\Metrics\TimeInterval;
 use Code16\Metrics\Repositories\MetricRepository;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class MetricEloquentRepository implements MetricRepository
 {
@@ -78,7 +77,7 @@ class MetricEloquentRepository implements MetricRepository
      */
     public function getMinStart()
     {
-        if($result = DB::table("metric_metrics")->selectRaw("min(start) as min_start")->first()) {
+        if($result = $this->metric->selectRaw("min(start) as min_start")->first()) {
             return $result->min_start ? Carbon::parse($result->min_start) : null;
         }
 

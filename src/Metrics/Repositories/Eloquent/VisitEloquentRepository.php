@@ -9,7 +9,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Code16\Metrics\Repositories\VisitRepository;
-use Illuminate\Support\Facades\DB;
 
 class VisitEloquentRepository implements VisitRepository
 {
@@ -46,7 +45,7 @@ class VisitEloquentRepository implements VisitRepository
      */
     public function getMinDate()
     {
-        if($result = DB::table("metric_visits")->selectRaw("min(date) as min_date")->first()) {
+        if($result = $this->visit->selectRaw("min(date) as min_date")->first()) {
             return $result->min_date ? Carbon::parse($result->min_date) : null;
         }
 
