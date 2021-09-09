@@ -156,7 +156,7 @@ class TrackingTest extends MetricTestCase
 
     /** @test */
     public function login_the_user_triggers_the_time_machine()
-    {   
+    {
         $user = $this->createTestUser();
         $timeMachine = Mockery::mock(TimeMachine::class);
         $timeMachine->shouldReceive('updatePreviousSessions')->andReturn(true);
@@ -343,7 +343,7 @@ class TrackingTest extends MetricTestCase
         $result = $this->get(route("home", $utmFields))
             ->assertStatus(200);
 
-        $visit = app(VisitRepository::class)->first();
+        $visit = app(VisitRepository::class)->all()->first();
 
         foreach($utmFields as $utm => $value) {
             $this->assertEquals($value, $visit->getCustomValue($utm));

@@ -16,7 +16,7 @@ interface VisitRepository {
 
     public function getByTimeInterval(TimeInterval $interval);
 
-    public function first();
+    public function getMinDate();
 
     public function last();
 
