@@ -24,7 +24,7 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
     public function setUp(): void
     {
         $this->faker = Factory::create();
-        
+
         parent::setUp();
 
         $this->loadLaravelMigrations(['--database' => 'sqlite']);
@@ -46,8 +46,8 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('app.debug', true);
-        $app['config']->set('mail.driver', 'log'); 
-        $app['config']->set('session.driver', 'array'); 
+        $app['config']->set('mail.driver', 'log');
+        $app['config']->set('session.driver', 'array');
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite.database', ':memory:');
         $app['config']->set('metrics.logging', true);
@@ -94,8 +94,8 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
         $visits = [];
         for($x=0;$x<$number;$x++) {
             $visits[] = $this->makeVisit($attributes, $timeInterval);
-        }   
-        return new Collection($visits);    
+        }
+        return new Collection($visits);
     }
 
     // Generate fake visits we can parse for metrics
@@ -107,8 +107,8 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
         for($x=0;$x<$number;$x++) {
             $attributes['date'] = $faker->dateTimeBetween($start,$end);
             $visits[] = $this->makeVisit($attributes);
-        }   
-        return new Collection($visits);    
+        }
+        return new Collection($visits);
     }
 
     // Generate fake visits and save them in database
@@ -137,11 +137,11 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
 
     /**
      * Create Random visit in every subdivision (hour) of the given time interval
-     * 
-     * @param  TimeInterval $interval   
-     * @param  integer      $number     number of visits per hour     
-     * @param  array        $attributes 
-     * @return void                   
+     *
+     * @param  TimeInterval $interval
+     * @param  integer      $number     number of visits per hour
+     * @param  array        $attributes
+     * @return void
      */
     protected function createVisitsInEveryTimeInterval(TimeInterval $interval, $number, $attributes = [])
     {
@@ -152,7 +152,7 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
 
     /**
      * Generate some realistic sitemap from a website
-     * 
+     *
      * @return array
      */
     protected function getUrlStack()
@@ -175,13 +175,13 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
             '/movies/transpotting',
         ];
     }
- 
+
     /**
      * Build a visit record. Attributes overrides generated data
-     * 
+     *
      * @param  array  $attributes   manually set some attribute
      * @param  string $startDate    the time interval in the past to create the visits
-     * @return Visit             
+     * @return Visit
      */
     protected function makeVisit(array $attributes = [], $startDate = '-1 year')
     {
@@ -191,7 +191,6 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
             'user_id' => null,
             'url' => $faker->randomElement($this->getUrlStack()),
             'user_agent' => $faker->userAgent,
-            'ip' => $faker->randomElement([$faker->ipv4, $faker->ipv6]),
             'date' => $faker->dateTimeBetween($startDate),
             'cookie' => $faker->sha256,
             'referer' => '',
@@ -221,7 +220,7 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
 
     /**
      * Create a User
-     * 
+     *
      * @return App\User
      */
     protected function createTestUser()
@@ -237,7 +236,7 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
     /**
      * Assert all visit are unique to Cookie, useful to validate
      * some analyzers, consoliders
-     * 
+     *
      * @return void
      */
     protected function assertVisitsAreUnique()
@@ -269,33 +268,33 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
 
     /**
      * Get last day as time interval
-     * 
+     *
      * @return TimeInterval
      */
     protected function getLastDay()
     {
         $start = Carbon::now()->subDay(1)->startOfDay();
         $end = Carbon::now()->subDay(1)->endOfDay();
-        
+
         return new TimeInterval($start, $end, Metric::DAILY);
     }
 
     /**
      * Get last month as time interval
-     * 
+     *
      * @return TimeInterval
      */
     protected function getLastMonth()
     {
         $start = Carbon::now()->subMonth(1)->startOfMonth();
         $end = Carbon::now()->subMonth(1)->endOfMonth();
-        
+
         return new TimeInterval($start, $end, Metric::MONTHLY);
     }
 
     /**
      * Get last year as time interval
-     * 
+     *
      * @return TimeInterval
      */
     protected function getLastYear()
@@ -331,10 +330,10 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
     /**
      * Create a collection of metric objects, by analyzing every hour
      * in the time interval
-     * 
-     * @param  AnalyzerInterface $analyzer   
-     * @param  TimeInterval      $interval   
-     * @param  integer           $visitCount 
+     *
+     * @param  AnalyzerInterface $analyzer
+     * @param  TimeInterval      $interval
+     * @param  integer           $visitCount
      * @return Collection
      */
     protected function createMetrics(AnalyzerInterface $analyzer, TimeInterval $interval, $visitCount)
@@ -342,7 +341,7 @@ abstract class MetricTestCase extends \Orchestra\Testbench\TestCase
         $metrics = new Collection;
         $this->createVisitsInTimeInterval($interval, $visitCount);
         $visits = $this->visits->getByTimeInterval($interval);
-    
+
         $compiler = new Compiler([$analyzer]);
 
         foreach($interval->toHours() as $hour) {
