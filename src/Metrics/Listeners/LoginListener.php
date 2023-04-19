@@ -11,7 +11,7 @@ use Code16\Metrics\Jobs\MarkPreviousUserVisits;
 use Code16\Metrics\Jobs\RetroSessions;
 use Code16\Metrics\Manager;
 
-class LoginListener 
+class LoginListener
 {
     use DispatchesJobs;
 
@@ -52,11 +52,11 @@ class LoginListener
 
             // Then we tell the manager to go look back in time for untracked visits
             $job = new MarkPreviousUserVisits($event->user);
-            
-            $this->dispatchNow($job);
+
+            $this->dispatchSync($job);
 
             $retro = new RetroSessions();
-            $this->dispatchNow($retro);
+            $this->dispatchSync($retro);
         }
     }
 
