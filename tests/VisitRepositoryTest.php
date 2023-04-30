@@ -21,7 +21,7 @@ class VisitRepositoryTest extends MetricTestCase
     {
         $visit = $this->makeVisit();
         $this->repository->store($visit);
-        $this->seeInDatabase('metric_visits', ['ip' => $visit->getIp() ]);
+        $this->assertDatabaseCount('metric_visits', 1);
     }
 
     /** @test */

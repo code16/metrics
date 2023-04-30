@@ -19,12 +19,6 @@ class Visit implements Arrayable
      * @var string
      */
     protected $user_id;
-   
-    /**
-     * IP of the visit
-     * @var string
-     */
-    protected $ip;
 
     /**
      * Full user agent of the visit
@@ -57,7 +51,7 @@ class Visit implements Arrayable
     protected $actions;
 
     /**
-     * Custom data to be added 
+     * Custom data to be added
      * @var array
      */
     protected $custom = [];
@@ -94,7 +88,7 @@ class Visit implements Arrayable
     /**
      * Create a Visit instance from an array. We'll use this Essentially
      * to reconstruct a Visit object from a database row.
-     * 
+     *
      * @param array $data
      * @return Visit
      */
@@ -103,7 +97,6 @@ class Visit implements Arrayable
         $visit = new static;
 
         $visit->id = $data['id'] ?? null;
-        $visit->ip = $data['ip'];
         $visit->user_agent = $data['user_agent'];
         $visit->user_id = $data['user_id'];
         $visit->custom = $data['custom'];
@@ -124,8 +117,8 @@ class Visit implements Arrayable
 
     /**
      * Set anonymous flag
-     * 
-     * @param boolean $anonymous 
+     *
+     * @param boolean $anonymous
      */
     public function setAnonymous($anonymous = true)
     {
@@ -134,7 +127,7 @@ class Visit implements Arrayable
 
     /**
      * Is Visit anonymous ?
-     * 
+     *
      * @return boolean
      */
     public function isAnonymous()
@@ -144,7 +137,7 @@ class Visit implements Arrayable
 
     /**
      * Set the user id for this record
-     * 
+     *
      * @param  int $userId
      */
     public function setUserId($userId)
@@ -164,7 +157,7 @@ class Visit implements Arrayable
 
     /**
      * Get the visited url
-     * 
+     *
      * @return string
      */
     public function getUrl()
@@ -174,7 +167,7 @@ class Visit implements Arrayable
 
     /**
      * Set the Url
-     * 
+     *
      * @param string $url
      */
     public function setUrl($url)
@@ -184,7 +177,7 @@ class Visit implements Arrayable
 
     /**
      * Set referer
-     * 
+     *
      * @param string $referer
      */
     public function setReferer($referer)
@@ -193,29 +186,8 @@ class Visit implements Arrayable
     }
 
     /**
-     * Get request IP
-     * 
-     * @return string
-     */
-    public function getIp()
-    {
-        return $this->ip;
-    }
-
-    /**
-     * Set IP Address
-     * 
-     * @param string $ip
-     * @return void
-     */
-    public function setIp($ip)
-    {
-        $this->ip = $ip;
-    }
-
-    /**
      * Return laravel cookie
-     * 
+     *
      * @return string
      */
     public function getCookie()
@@ -225,7 +197,7 @@ class Visit implements Arrayable
 
     /**
      * Set cookie
-     * 
+     *
      * @param string $cookie
      */
     public function setCookie($cookie = null)
@@ -245,17 +217,17 @@ class Visit implements Arrayable
 
     /**
      * Set date
-     * 
+     *
      * @param Carbon $date
      */
     public function setDate(Carbon $date)
-    {   
+    {
         $this->date = $date;
     }
 
     /**
-     * Return user agent 
-     * 
+     * Return user agent
+     *
      * @return string
      */
     public function getUserAgent()
@@ -275,7 +247,7 @@ class Visit implements Arrayable
 
     /**
      * Set Session id
-     * 
+     *
      * @param string $sessionId
      */
     public function setSessionId($sessionId)
@@ -285,7 +257,7 @@ class Visit implements Arrayable
 
     /**
      * Get session id
-     * 
+     *
      * @return string
      */
     public function getSessionId()
@@ -295,7 +267,7 @@ class Visit implements Arrayable
 
     /**
      * Set status code
-     * 
+     *
      * @param string $statusCode
      */
     public function setStatusCode($statusCode)
@@ -305,7 +277,7 @@ class Visit implements Arrayable
 
     /**
      * Get status code
-     * 
+     *
      * @return string
      */
     public function getStatusCode()
@@ -315,7 +287,7 @@ class Visit implements Arrayable
 
     /**
      * Get actions on this visit
-     * 
+     *
      * @return Collection
      */
     public function actions()
@@ -325,7 +297,7 @@ class Visit implements Arrayable
 
     /**
      * Attach an action to the visit
-     * 
+     *
      * @param Action $action
      * @return Visit
      */
@@ -338,7 +310,7 @@ class Visit implements Arrayable
 
     /**
      * Get the action from the given class
-     * 
+     *
      * @param  string $actionClass
      * @return  Action | null
      */
@@ -355,9 +327,9 @@ class Visit implements Arrayable
 
     /**
      * Return true if the Visit has an action of the given class
-     * 
+     *
      * @param  string  $actionClass
-     * @return boolean        
+     * @return boolean
      */
     public function hasAction($actionClass)
     {
@@ -366,18 +338,18 @@ class Visit implements Arrayable
 
     /**
      * Add a custom tracking value to the object
-     * 
-     * @param string $key 
+     *
+     * @param string $key
      * @param mixed $value
      */
     public function setCustomValue($key, $value)
-    {   
+    {
         $this->custom[$key] = $value;
     }
 
     /**
      * Get a custom value from the object
-     * 
+     *
      * @param  string $key
      * @return mixed
      */
@@ -388,8 +360,8 @@ class Visit implements Arrayable
 
     /**
      * Check if a custom value exists
-     * 
-     * @param  string  $key 
+     *
+     * @param  string  $key
      * @return boolean
      */
     public function hasCustomValue($key)
@@ -399,14 +371,13 @@ class Visit implements Arrayable
 
     /**
      * Convert object to array, including serialisation of actions
-     * 
+     *
      * @return array
      */
     public function toArray()
     {
         return [
             'id' => $this->id,
-            'ip' => $this->ip,
             'user_id' => $this->user_id,
             'user_agent' =>  $this->user_agent,
             'actions' => $this->getSerializedActions(),
@@ -423,7 +394,7 @@ class Visit implements Arrayable
 
     /**
      * Get actions as serialized objects
-     * 
+     *
      * @return array
      */
     protected function getSerializedActions()
@@ -437,7 +408,7 @@ class Visit implements Arrayable
 
     /**
      * Magic getter for object's properties
-     * 
+     *
      * @param  string  $key
      * @return mixed
      */
