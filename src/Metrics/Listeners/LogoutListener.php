@@ -6,7 +6,7 @@ use Code16\Metrics\Manager;
 use Illuminate\Auth\Events\Logout;
 use Code16\Metrics\Actions\UserLogoutAction;
 
-class LogoutListener 
+class LogoutListener
 {
 
     protected $manager;
@@ -24,9 +24,11 @@ class LogoutListener
      */
     public function handle(Logout $event)
     {
-        // We add a user login action
-        $action = new UserLogoutAction($event->user->id);
-        $this->manager->action($action);
+        if ($event->user) {
+            // We add a user login action
+            $action = new UserLogoutAction($event->user->id);
+            $this->manager->action($action);
+        }
     }
 
 }
