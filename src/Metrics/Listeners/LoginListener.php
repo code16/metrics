@@ -2,14 +2,12 @@
 
 namespace Code16\Metrics\Listeners;
 
-use Log;
-use Illuminate\Http\Request;
+use Code16\Metrics\Actions\UserLoginAction;
+use Code16\Metrics\Manager;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Code16\Metrics\Actions\UserLoginAction;
-use Code16\Metrics\Jobs\MarkPreviousUserVisits;
-use Code16\Metrics\Jobs\RetroSessions;
-use Code16\Metrics\Manager;
+use Illuminate\Http\Request;
+use Log;
 
 class LoginListener
 {
@@ -49,14 +47,16 @@ class LoginListener
             // We add a user login action
             $action = new UserLoginAction($event->user->id);
             $this->manager->action($action);
+            
+            // Remove this feature since it leads to HUGE performance issues in some login cases
 
-            // Then we tell the manager to go look back in time for untracked visits
-            $job = new MarkPreviousUserVisits($event->user);
-
-            $this->dispatchSync($job);
-
-            $retro = new RetroSessions();
-            $this->dispatchSync($retro);
+//            // Then we tell the manager to go look back in time for untracked visits
+//            $job = new MarkPreviousUserVisits($event->user);
+//
+//            $this->dispatchSync($job);
+//
+//            $retro = new RetroSessions();
+//            $this->dispatchSync($retro);
         }
     }
 
