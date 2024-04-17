@@ -27,6 +27,10 @@ abstract class UtmAnalyzer extends Analyzer
                 ? $visit->getCustomValue($field)
                 : null;
 
+            if(is_array($value)) {
+                $value = $value[0] ?? null;
+            }
+
             if($value) {
                 $values[$value] = ($values[$value] ?? 0) + 1;
             }
