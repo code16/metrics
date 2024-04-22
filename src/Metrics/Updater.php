@@ -249,16 +249,16 @@ class Updater
     {
         switch($type) {
             case Metric::YEARLY:
-                $diff = $start->diffInYears($end);
+                $diff = (int) $end->diffInYears($start, true);
                 break;
             case Metric::MONTHLY:
-                $diff = $start->diffInMonths($end);
+                $diff = (int) $end->diffInMonths($start, true);
                 break;
             case Metric::DAILY:
-                $diff = $start->diffInDays($end);
+                $diff = (int) $end->diffInDays($start, true);
                 break;
             case Metric::HOURLY:
-                $diff = $start->diffInHours($end);
+                $diff = (int) $end->diffInHours($start, true);
         }
 
         $intervals = [];
