@@ -10,18 +10,18 @@
         }
     ],
     "require": {
-        "php": "^7.2.5|^8.0|^8.1|^8.2|^8.3",
-        "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "php": "^8.2|^8.3",
+        "illuminate/support": "^11.0",
         "jenssegers/agent": "^2.3",
-        "doctrine/dbal": "^2.5|^3.0"
+        "doctrine/dbal": "^3.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.0|^8.5|^9.5",
-        "orchestra/testbench": "4.*|5.*|6.*|7.*|8.*|9.*",
+        "phpunit/phpunit": "^10.0",
+        "orchestra/testbench": "9.*",
         "mockery/mockery": "^1.0",
         "fakerphp/faker": "^1.19.0",
-        "symfony/css-selector": "4.0.*|5.0.*",
-        "symfony/dom-crawler": "4.0.*|5.0.*"
+        "symfony/css-selector": "5.0.*",
+        "symfony/dom-crawler": "5.0.*"
     },
     "autoload": {
        "psr-4": {
@@ -36,7 +36,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Code16\\Metrics\\Tests\\": "tests/"
+            "Code16\\Metrics\\Tests\\": "tests/",
+            "Code16\\Metrics\\Tests\\Stubs\\": "tests/stubs/"
         }
     },
     "extra": {

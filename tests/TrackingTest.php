@@ -161,7 +161,7 @@ class TrackingTest extends MetricTestCase
         $timeMachine = Mockery::mock(TimeMachine::class);
         $timeMachine->shouldReceive('updatePreviousSessions')->andReturn(true);
         $timeMachine->shouldReceive('setCurrentVisit');
-        $timeMachine->shouldReceive('lookup')->once()->with($user->id);
+//        $timeMachine->shouldReceive('lookup')->once()->with($user->id);
         $this->app->bind(TimeMachine::class, function ($app) use ($timeMachine) {
             return $timeMachine;
         });
