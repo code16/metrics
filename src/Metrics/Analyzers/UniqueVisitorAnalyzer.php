@@ -11,10 +11,8 @@ class UniqueVisitorAnalyzer extends Analyzer
 
     public function compile(Collection $visits, TimeInterval $interval)
     {
-        $data = [];
-
         $cookieStack = [];
-        
+
         foreach($visits as $visit) {
             if(! in_array($visit->getCookie(), $cookieStack)) {
                 $cookieStack[] = $visit->getCookie();
@@ -22,11 +20,10 @@ class UniqueVisitorAnalyzer extends Analyzer
         }
 
         return ['unique-visitors' => count($cookieStack)];
-
     }
 
     // This operation will add two array returned by the compile() method
-    // then return a consolidated array. 
+    // then return a consolidated array.
     public function consolidate(Collection $metrics, TimeInterval $interval)
     {
         $uniqueVisitors = 0;
@@ -37,7 +34,7 @@ class UniqueVisitorAnalyzer extends Analyzer
                 $uniqueVisitors+= $statistic['unique-visitors'];
             }
         }
-        
+
         $data = ['unique-visitors' => $uniqueVisitors];
         return $data;
     }

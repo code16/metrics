@@ -31,7 +31,7 @@ class VisitCreator
 
     /**
      * Create a Visit instance from a Request object
-     * 
+     *
      * @param  Request $request
      * @return Visit
      */
@@ -41,7 +41,6 @@ class VisitCreator
         $visit->setDate(Carbon::now());
         $visit->setUrl($request->getUri());
         $visit->setReferer($request->server('HTTP_REFERER'));
-        $visit->setIp($request->ip());
 
         $cookiePresent = $request->hasCookie(config('metrics.cookie_name'));
         $anonCookiePresent = $request->hasCookie(config('metrics.anonymous_cookie_name'));
@@ -94,9 +93,9 @@ class VisitCreator
     protected function getUMTFromRequest(Request $request) : array
     {
         $fields = config('metrics.utm_fields_mapping');
-        
+
         $fieldsInRequest = [];
-        
+
         foreach($fields as $standardUMTKey => $mappedKey) {
             if($request->has($mappedKey)) {
                 $fieldsInRequest[$standardUMTKey] = $request->get($mappedKey);
@@ -108,9 +107,9 @@ class VisitCreator
 
     /**
      * Check if the cookie has expired
-     * 
+     *
      * @param  string  $cookie
-     * @return boolean        
+     * @return boolean
      */
     protected function hasCookieExpired($cookie)
     {
